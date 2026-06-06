@@ -4,3 +4,5 @@ django-types==0.24.0
 pillow==12.2.0
 sqlparse==0.5.5
 types-psycopg2==2.9.21.20260518
+types-PyYAML==6.0.12.20260518
+typing_extensions==4.15.0
