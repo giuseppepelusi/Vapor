@@ -14,7 +14,7 @@ setup: clean
 	$(PIP) install -r requirements.txt
 	$(PYTHON) manage.py makemigrations
 	$(PYTHON) manage.py migrate
-	$(PYTHON) manage.py shell -c "from django.contrib.auth import get_user_model; User=get_user_model(); u, _ = User.objects.get_or_create(username='admin', defaults={'is_staff':True, 'is_superuser':True}); u.set_password('admin'); u.save()"
+	DJANGO_SUPERUSER_PASSWORD=admin $(PYTHON) manage.py createsuperuser --noinput --username admin --email admin@email.com
 
 dsave:
 	mkdir -p $(SEED)
