@@ -12,4 +12,20 @@ urlpatterns = [
     path("wishlist/", views.wishlist, name="wishlist"),
     path("dashboard/", views.dashboard, name="dashboard"),
     path("dashboard/add-game/", views.add_game, name="add_game"),
+    path(
+        "api/wishlist/<int:game_id>/",
+        views.api_toggle_wishlist,
+        name="api_toggle_wishlist",
+    ),
+    path(
+        "api/purchase/<int:game_id>/", views.api_purchase_game, name="api_purchase_game"
+    ),
+    path(
+        "api/review/<int:game_id>/", views.api_submit_review, name="api_submit_review"
+    ),
+    path(
+        "api/follow/<int:developer_id>/",
+        views.api_toggle_follow,
+        name="api_toggle_follow",
+    ),
 ]
