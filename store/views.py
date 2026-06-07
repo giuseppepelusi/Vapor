@@ -1,5 +1,6 @@
 import json
 
+from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
@@ -68,7 +69,6 @@ def login_user(request):
     if request.user.is_authenticated:
         return redirect("catalog")
 
-    error_message = None
     if request.method == "POST":
         username = request.POST.get("username", "").strip()
         password = request.POST.get("password", "").strip()
@@ -76,38 +76,40 @@ def login_user(request):
         user = authenticate(request, username=username, password=password)
         if user is not None:
             login(request, user)
+            messages.success(request, f"Welcome back, {user.username}!")
             return redirect("catalog")
         else:
-            error_message = "Invalid username or password."
+            messages.error(request, "Invalid username or password.")
 
-    return render(request, "login.html", {"error": error_message})
+    return render(request, "login.html")
 
 
 def signup_user(request):
     if request.user.is_authenticated:
         return redirect("catalog")
 
-    error_message = None
     if request.method == "POST":
         username = request.POST.get("username", "").strip()
         password = request.POST.get("password", "").strip()
         role = request.POST.get("role", "player")
 
         if User.objects.filter(username=username).exists():
-            error_message = "This username is already taken."
+            messages.error(request, "This username is already taken.")
         else:
             user = User.objects.create_user(username=username, password=password)
             is_dev = role == "developer"
             UserProfile.objects.create(user=user, is_developer=is_dev)
 
             login(request, user)
+            messages.success(request, "Account created successfully! Welcome to Vapor.")
             return redirect("catalog")
 
-    return render(request, "signup.html", {"error": error_message})
+    return render(request, "signup.html")
 
 
 def logout_user(request):
     logout(request)
+    messages.info(request, "You have been logged out successfully.")
     return redirect("catalog")
 
 
@@ -130,6 +132,7 @@ def wishlist(request):
 @login_required
 def dashboard(request):
     if not request.user.profile.is_developer:
+        messages.error(request, "Access denied. You are not registered as a developer.")
         return redirect("catalog")
 
     my_games = Game.objects.filter(developer=request.user).order_by("-created_at")
@@ -140,9 +143,9 @@ def dashboard(request):
 @login_required
 def add_game(request):
     if not request.user.profile.is_developer:
+        messages.error(request, "Access denied. Only developers can add games.")
         return redirect("catalog")
 
-    error_message = None
     genres = Genre.objects.all()
 
     if request.method == "POST":
@@ -154,8 +157,9 @@ def add_game(request):
         genre_ids = request.POST.getlist("genres")
 
         if not title or not description or not genre_ids:
-            error_message = (
-                "Please fill in all required fields and select at least one genre."
+            messages.warning(
+                request,
+                "Please fill in all required fields and select at least one genre.",
             )
         else:
             game = Game.objects.create(
@@ -167,9 +171,12 @@ def add_game(request):
                 developer=request.user,
             )
             game.genres.set(genre_ids)
+            messages.success(
+                request, f'"{title}" has been successfully added to the store!'
+            )
             return redirect("dashboard")
 
-    return render(request, "add_game.html", {"genres": genres, "error": error_message})
+    return render(request, "add_game.html", {"genres": genres})
 
 
 @login_required
