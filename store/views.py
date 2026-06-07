@@ -49,7 +49,7 @@ def game_detail(request, game_id):
         is_wishlisted = Wishlist.objects.filter(player=request.user, game=game).exists()
 
         developer_profile = get_object_or_404(UserProfile, user=game.developer)
-        is_following = request.user.userprofile.following.filter(
+        is_following = request.user.profile.following.filter(
             id=developer_profile.id
         ).exists()
 
@@ -129,7 +129,7 @@ def wishlist(request):
 
 @login_required
 def dashboard(request):
-    if not request.user.userprofile.is_developer:
+    if not request.user.profile.is_developer:
         return redirect("catalog")
 
     my_games = Game.objects.filter(developer=request.user).order_by("-created_at")
@@ -139,7 +139,7 @@ def dashboard(request):
 
 @login_required
 def add_game(request):
-    if not request.user.userprofile.is_developer:
+    if not request.user.profile.is_developer:
         return redirect("catalog")
 
     error_message = None
@@ -251,7 +251,7 @@ def api_toggle_follow(request, developer_id):
     developer_profile = get_object_or_404(
         UserProfile, user=developer_user, is_developer=True
     )
-    user_profile = request.user.userprofile
+    user_profile = request.user.profile
 
     if developer_profile == user_profile:
         return JsonResponse(
