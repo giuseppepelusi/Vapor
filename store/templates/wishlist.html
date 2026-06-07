@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+{% block title %}Wishlist{% endblock %}
+{% block content %}
+    <section>
+        <h1>My Wishlist</h1>
+        {% if games %}
+            {% for game in games %}
+                <article>
+                    {% if game.cover_image %}
+                        <img src="{{ game.cover_image.url }}" alt="{{ game.title }}" />
+                    {% else %}
+                        <p>No Image</p>
+                    {% endif %}
+                    <h3><a href="{% url 'game_detail' game.id %}">{{ game.title }}</a></h3>
+                    <p>${{ game.price }}</p>
+                    <p>
+                        {% for genre in game.genres.all %}
+                            <span>{{ genre.name }}</span>
+                        {% endfor %}
+                    </p>
+                    <p>by {{ game.developer.username }}</p>
+                    <div>
+                        <a href="{% url 'game_detail' game.id %}" role="button">View</a>
+                        <button type="button"
+                                onclick="toggleWishlist(this, {{ game.id }})"
+                                data-wishlisted="true">Remove from Wishlist</button>
+                    </div>
+                </article>
+            {% endfor %}
+        {% else %}
+            <p>
+                Your wishlist is empty.
+                <a href="{% url 'catalog' %}">Add games to your wishlist</a>
+            </p>
+        {% endif %}
+    </section>
+{% endblock %}

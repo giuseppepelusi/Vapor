@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+    <section>
+        <h1>My Games</h1>
+        <div>
+            <a href="{% url 'add_game' %}" role="button">+ Add New Game</a>
+        </div>
+        {% if games %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>Title</th>
+                        <th>Price</th>
+                        <th>Genres</th>
+                        <th>Created</th>
+                        <th>Sales</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for game in games %}
+                        <tr>
+                            <td>{{ game.title }}</td>
+                            <td>${{ game.price }}</td>
+                            <td>
+                                {% for genre in game.genres.all %}
+                                    <span>{{ genre.name }}</span>
+                                {% endfor %}
+                            </td>
+                            <td>{{ game.created_at|date:"M d, Y" }}</td>
+                            <td>{{ game.sales.count }}</td>
+                            <td>
+                                <a href="{% url 'game_detail' game.id %}" role="button">View</a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p>
+                You haven't published any games yet.
+                <a href="{% url 'add_game' %}">Create your first game</a>
+            </p>
+        {% endif %}
+    </section>
+{% endblock %}

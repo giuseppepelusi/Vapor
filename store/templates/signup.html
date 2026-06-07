@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% block title %}Sign Up{% endblock %}
+{% block content %}
+    <section>
+        <article>
+            <h1>Create Account</h1>
+            <form method="POST">
+                {% csrf_token %}
+                <div>
+                    <label for="username">Username</label>
+                    <input type="text" id="username" name="username" required autofocus />
+                </div>
+                <div>
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" required />
+                </div>
+                <div>
+                    <label for="role">Account Type</label>
+                    <select id="role" name="role" required>
+                        <option value="player">Player</option>
+                        <option value="developer">Developer</option>
+                    </select>
+                </div>
+                <button type="submit">Create Account</button>
+            </form>
+            <p>Already have an account? <a href="{% url 'login' %}">Login here</a></p>
+        </article>
+    </section>
+{% endblock %}

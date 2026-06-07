@@ -1,0 +1,106 @@
+{% extends 'base.html' %}
+{% block title %}{{ game.title }}{% endblock %}
+{% block content %}
+    <section>
+        <header>
+            {% if game.cover_image %}
+                <img src="{{ game.cover_image.url }}" alt="{{ game.title }}" />
+            {% else %}
+                <p>No Image</p>
+            {% endif %}
+            <h1>{{ game.title }}</h1>
+            <p>${{ game.price }}</p>
+            <p>
+                {% for genre in game.genres.all %}
+                    <span>{{ genre.name }}</span>
+                {% endfor %}
+            </p>
+            <p id="rating-display">
+                {% if average_rating %}
+                    Rating: {{ average_rating }}/5 ({{ reviews.count }} review{{ reviews.count|pluralize }})
+                {% else %}
+                    <em>No reviews yet</em>
+                {% endif %}
+            </p>
+            <div>
+                {% if user.is_authenticated %}
+                    {% if is_purchased %}
+                        <p>You own this game</p>
+                    {% else %}
+                        <button onclick="purchaseGame(this, {{ game.id }})">Buy Now</button>
+                        <button onclick="toggleWishlist(this, {{ game.id }})">
+                            {% if is_wishlisted %}
+                                Remove from Wishlist
+                            {% else %}
+                                Add to Wishlist
+                            {% endif %}
+                        </button>
+                    {% endif %}
+                    <button onclick="toggleFollow(this, {{ game.developer.id }})">
+                        {% if is_following %}
+                            Following
+                        {% else %}
+                            Follow Developer
+                        {% endif %}
+                    </button>
+                {% else %}
+                    <p><a href="{% url 'login' %}" role="button">Login to Purchase</a></p>
+                {% endif %}
+            </div>
+        </header>
+        <article>
+            <h2>About</h2>
+            <p>{{ game.description }}</p>
+            <h2>System Requirements</h2>
+            <p>{{ game.system_requirements }}</p>
+            <h2>Developer</h2>
+            <p>
+                {{ game.developer.username }}
+                {% if user == game.developer %}
+                    <em>(Your Game)</em>
+                {% endif %}
+            </p>
+        </article>
+        {% if user.is_authenticated and is_purchased %}
+            <aside>
+                <h2>Reviews</h2>
+                <form id="review-form" data-game-id="{{ game.id }}">
+                    <h3>Leave a Review</h3>
+                    <label for="rating">Rating</label>
+                    <select id="rating" required>
+                        <option value="">Select rating...</option>
+                        <option value="5">5 - Excellent</option>
+                        <option value="4">4 - Good</option>
+                        <option value="3">3 - Average</option>
+                        <option value="2">2 - Poor</option>
+                        <option value="1">1 - Terrible</option>
+                    </select>
+                    <label for="comment">Comment</label>
+                    <textarea id="comment" rows="4" placeholder="Share your thoughts..."></textarea>
+                    <button type="submit">Submit Review</button>
+                </form>
+                <div>
+                    {% if reviews %}
+                        {% for review in reviews %}
+                            <article data-review-id="{{ review.id }}">
+                                <header>
+                                    <strong>{{ review.player.username }}</strong>
+                                    <span>Rating: {{ review.rating }}/5</span>
+                                </header>
+                                <p>{{ review.comment }}</p>
+                                <footer>
+                                    <small>{{ review.created_at|date:"M d, Y" }}</small>
+                                </footer>
+                            </article>
+                        {% endfor %}
+                    {% else %}
+                        <p>No reviews yet. Be the first to review!</p>
+                    {% endif %}
+                </div>
+            </aside>
+        {% endif %}
+    </section>
+    {% if user.is_authenticated %}
+        <input type="hidden" id="csrf-token" value="{{ csrf_token }}" />
+    {% endif %}
+{% endblock %}

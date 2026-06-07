@@ -1,0 +1,48 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Vapor |
+            {% block title %}{% endblock %}
+        </title>
+        <link rel="icon" href="{% static 'img/logo.svg' %}" type="image/svg+xml" />
+        <link rel="stylesheet" href="{% static 'css/style.css' %}" />
+        {% block extra_css %}{% endblock %}
+    </head>
+    <body>
+        <nav>
+            <div class="navbar-brand">
+                <a href="{% url 'catalog' %}">Vapor</a>
+            </div>
+            <div class="navbar-links">
+                <a href="{% url 'catalog' %}">Store</a>
+                {% if user.is_authenticated %}
+                    <a href="{% url 'library' %}">Library</a>
+                    <a href="{% url 'wishlist' %}">Wishlist</a>
+                    {% if user.profile.is_developer %}
+                        <a href="{% url 'dashboard' %}">Dashboard</a>
+                    {% endif %}
+                    <span>{{ user.username }}</span>
+                    <a href="{% url 'logout' %}">Logout</a>
+                {% else %}
+                    <a href="{% url 'login' %}">Login</a>
+                {% endif %}
+            </div>
+        </nav>
+        <main>
+            {% if messages %}
+                {% for message in messages %}
+                    <aside data-type="{{ message.tags }}">
+                        {{ message }}
+                    </aside>
+                {% endfor %}
+            {% endif %}
+            {% block content %}
+            {% endblock %}
+        </main>
+        <script src="{% static 'js/api.js' %}"></script>
+        {% block scripts %}{% endblock %}
+    </body>
+</html>

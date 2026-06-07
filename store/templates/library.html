@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% block title %}Library{% endblock %}
+{% block content %}
+    <section>
+        <h1>My Library</h1>
+        {% if games %}
+            {% for game in games %}
+                <article>
+                    {% if game.cover_image %}
+                        <img src="{{ game.cover_image.url }}" alt="{{ game.title }}" />
+                    {% else %}
+                        <p>No Image Available</p>
+                    {% endif %}
+                    <h3><a href="{% url 'game_detail' game.id %}">{{ game.title }}</a></h3>
+                    <p>${{ game.price }}</p>
+                    <p>
+                        {% for genre in game.genres.all %}
+                            <span>{{ genre.name }}</span>
+                        {% endfor %}
+                    </p>
+                    <p>by {{ game.developer.username }}</p>
+                    <a href="{% url 'game_detail' game.id %}" role="button">View</a>
+                </article>
+            {% endfor %}
+        {% else %}
+            <p>
+                You haven't purchased any games yet.
+                <a href="{% url 'catalog' %}">Browse the store</a>
+            </p>
+        {% endif %}
+    </section>
+{% endblock %}
