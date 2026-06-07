@@ -237,12 +237,23 @@ def api_submit_review(request, game_id):
         messages.error(request, "Rating must be between 1 and 5.")
         return JsonResponse({"status": "error"}, status=400)
 
-    Review.objects.update_or_create(
+    review, created = Review.objects.update_or_create(
         player=request.user, game=game, defaults={"rating": rating, "comment": comment}
     )
 
     messages.success(request, "Review submitted successfully!")
-    return JsonResponse({"status": "success"})
+    return JsonResponse(
+        {
+            "status": "success",
+            "review": {
+                "id": review.id,
+                "player_username": request.user.username,
+                "rating": review.rating,
+                "comment": review.comment,
+                "created_at": review.created_at.strftime("%b %d, %Y"),
+            },
+        }
+    )
 
 
 @login_required
