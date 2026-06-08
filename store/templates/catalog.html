@@ -1,9 +1,8 @@
 {% extends 'base.html' %}
 {% block title %}Store{% endblock %}
 {% block content %}
-    <header>
-        <h1>Game Store</h1>
-        <form method="GET">
+    <div class="catalog-subnav">
+        <form method="GET" class="subnav-search-form">
             <input type="text"
                    name="search"
                    placeholder="Search games..."
@@ -15,9 +14,9 @@
                             {% if genre.id|stringformat:"s" == selected_genre %}selected{% endif %}>{{ genre.name }}</option>
                 {% endfor %}
             </select>
-            <button type="submit">Filter</button>
+            <button type="submit">Search</button>
         </form>
-    </header>
+    </div>
     {% if games %}
         <ul class="game-list">
             {% for game in games %}
@@ -28,7 +27,13 @@
                         <p>No Image Available</p>
                     {% endif %}
                     <h3><a href="{% url 'game_detail' game.id %}">{{ game.title }}</a></h3>
-                    <p class="price">${{ game.price }}</p>
+                    <p class="price">
+                        {% if game.price == 0 %}
+                            Free To Play
+                        {% else %}
+                            &euro;{{ game.price }}
+                        {% endif %}
+                    </p>
                     <p class="genres">
                         {% for genre in game.genres.all %}
                             <span>{{ genre.name }}</span>

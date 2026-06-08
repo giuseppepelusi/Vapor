@@ -103,7 +103,8 @@ a:hover {
 
 nav {
 	background: linear-gradient(180deg, var(--bg-slate) 0%, rgba(30, 30, 36, 0.9) 30%);
-	padding: var(--spacing-xs) var(--spacing-lg);
+	padding: 0 var(--spacing-lg);
+	height: 60px;
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
@@ -213,6 +214,72 @@ nav > div:last-child span {
 
 .nav-logout-btn:hover span {
 	color: white;
+}
+
+.catalog-subnav {
+	position: sticky;
+	top: 60px;
+	z-index: 999;
+	display: flex;
+	justify-content: center;
+	margin-top: calc(-1 * var(--spacing-lg));
+	margin-bottom: var(--spacing-md);
+	padding: 0;
+	width: 100%;
+	pointer-events: none;
+}
+
+.subnav-search-form {
+	display: flex !important;
+	flex-direction: row !important;
+	align-items: center;
+	gap: var(--spacing-xs);
+	pointer-events: auto;
+
+	background: rgba(30, 30, 36, 0.9);
+	backdrop-filter: blur(10px);
+	border-left: 1px solid var(--border-color);
+	border-right: 1px solid var(--border-color);
+	border-bottom: 1px solid var(--border-color);
+	border-top: none;
+
+	border-top-left-radius: 0;
+	border-top-right-radius: 0;
+	border-bottom-left-radius: var(--radius-lg);
+	border-bottom-right-radius: var(--radius-lg);
+
+	box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+	padding: var(--spacing-xs);
+	width: auto;
+	max-width: 100%;
+}
+
+.subnav-search-form input,
+.subnav-search-form select {
+	padding: 10px 16px;
+	font-size: 1rem;
+	height: 44px;
+	border-radius: var(--radius-md);
+}
+
+.subnav-search-form input {
+	min-width: 240px;
+}
+
+.subnav-search-form select {
+	min-width: 160px;
+	width: auto;
+}
+
+.subnav-search-form button {
+	padding: 0 var(--spacing-lg);
+	font-size: 1rem;
+	height: 44px;
+	white-space: nowrap;
+	border-radius: var(--radius-md);
+	display: flex;
+	align-items: center;
+	justify-content: center;
 }
 
 section,
