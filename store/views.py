@@ -24,6 +24,26 @@ def catalog(request):
     if genre_filter:
         games = games.filter(genres__id=genre_filter)
 
+    if (
+        request.headers.get("x-requested-with") == "XMLHttpRequest"
+        or request.GET.get("format") == "json"
+    ):
+        games_list = []
+        for game in games:
+            games_list.append(
+                {
+                    "id": game.id,
+                    "title": game.title,
+                    "price": float(game.price),
+                    "cover_image_url": game.cover_image.url
+                    if game.cover_image
+                    else None,
+                    "developer_username": game.developer.username,
+                    "genres": [genre.name for genre in game.genres.all()],
+                }
+            )
+        return JsonResponse({"games": games_list})
+
     context = {
         "games": games,
         "genres": genres,

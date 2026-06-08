@@ -271,17 +271,6 @@ nav > div:last-child span {
 	width: auto;
 }
 
-.subnav-search-form button {
-	padding: 0 var(--spacing-lg);
-	font-size: 1rem;
-	height: 44px;
-	white-space: nowrap;
-	border-radius: var(--radius-md);
-	display: flex;
-	align-items: center;
-	justify-content: center;
-}
-
 section,
 main > header,
 .reviews-section,

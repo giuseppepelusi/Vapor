@@ -149,3 +149,97 @@ document.addEventListener("submit", (e) => {
 			.catch(() => showNotification("Network error", "error"));
 	}
 });
+
+document.addEventListener("DOMContentLoaded", () => {
+	const searchForm = document.querySelector(".subnav-search-form");
+	if (!searchForm) return;
+
+	const searchInput = searchForm.querySelector('input[name="search"]');
+	const genreSelect = searchForm.querySelector('select[name="genre"]');
+	const gameListContainer = document.querySelector(".game-list");
+	const mainContent = document.querySelector("main");
+	let debounceTimer;
+
+	function fetchFilteredGames() {
+		const searchQuery = searchInput.value;
+		const selectedGenre = genreSelect.value;
+
+		const baseUrl = searchForm.getAttribute("action") || window.location.pathname;
+		const url = `${baseUrl}?search=${encodeURIComponent(searchQuery)}&genre=${encodeURIComponent(selectedGenre)}&format=json`;
+
+		fetch(url, {
+			headers: { "X-Requested-With": "XMLHttpRequest" },
+		})
+			.then((res) => {
+				if (!res.ok) {
+					throw new Error(`Server returned status ${res.status}`);
+				}
+				return res.json();
+			})
+			.then((data) => {
+				updateGameCatalogUI(data.games);
+			})
+			.catch((err) => {
+				console.error(err);
+				showNotification("Failed to filter games", "error");
+			});
+	}
+
+	function updateGameCatalogUI(games) {
+		let listElement = document.querySelector(".game-list");
+
+		if (games.length === 0) {
+			if (listElement) listElement.remove();
+
+			let emptyMsg = document.getElementById("no-games-msg");
+			if (!emptyMsg) {
+				emptyMsg = document.createElement("p");
+				emptyMsg.id = "no-games-msg";
+				emptyMsg.textContent = "No games found. Try adjusting your filters.";
+				searchForm.parentElement.insertAdjacentElement("afterend", emptyMsg);
+			}
+			return;
+		}
+
+		document.getElementById("no-games-msg")?.remove();
+
+		if (!listElement) {
+			listElement = document.createElement("ul");
+			listElement.className = "game-list";
+			searchForm.parentElement.insertAdjacentElement("afterend", listElement);
+		} else {
+			listElement.innerHTML = "";
+		}
+
+		games.forEach((game) => {
+			const li = document.createElement("li");
+
+			const imgHTML = game.cover_image_url
+				? `<img src="${game.cover_image_url}" alt="${game.title}">`
+				: `<p>No Image Available</p>`;
+
+			const priceHTML = game.price === 0 ? "Free To Play" : `&euro;${game.price.toFixed(2)}`;
+
+			const genresHTML = game.genres.map((genre) => `<span>${genre}</span>`).join("");
+
+			li.innerHTML = `
+				${imgHTML}
+				<h3><a href="/game/${game.id}/">${game.title}</a></h3>
+				<p class="price">${priceHTML}</p>
+				<p class="genres">${genresHTML}</p>
+				<footer>
+					<small>by ${game.developer_username}</small>
+					<a href="/game/${game.id}/">View</a>
+				</footer>
+			`;
+			listElement.appendChild(li);
+		});
+	}
+
+	genreSelect.addEventListener("change", fetchFilteredGames);
+
+	searchInput.addEventListener("input", () => {
+		clearTimeout(debounceTimer);
+		debounceTimer = setTimeout(fetchFilteredGames, 300);
+	});
+});
