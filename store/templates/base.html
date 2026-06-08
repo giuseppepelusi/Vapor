@@ -32,10 +32,15 @@
             </div>
             <div>
                 {% if user.is_authenticated %}
-                    <span>{{ user.username }}</span>
-                    <a href="{% url 'logout' %}">Logout</a>
+                    <a href="{% url 'logout' %}" class="nav-logout-btn">
+                        <span>{{ user.username }}</span>
+                        <img src="{% static 'img/log-out.svg' %}" alt="Logout Icon">
+                    </a>
                 {% else %}
-                    <a href="{% url 'login' %}">Login</a>
+                    <a href="{% url 'login' %}" class="nav-login-btn">
+                        <img src="{% static 'img/log-in.svg' %}" alt="Login Icon">
+                        Login
+                    </a>
                 {% endif %}
             </div>
         </nav>
