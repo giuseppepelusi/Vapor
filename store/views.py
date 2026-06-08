@@ -185,17 +185,14 @@ def api_toggle_wishlist(request, game_id):
     game = get_object_or_404(Game, id=game_id)
 
     if Purchase.objects.filter(player=request.user, game=game).exists():
-        messages.error(request, "Game already purchased.")
         return JsonResponse({"status": "error"}, status=400)
 
     wishlist_item = Wishlist.objects.filter(player=request.user, game=game).first()
     if wishlist_item:
         wishlist_item.delete()
-        messages.success(request, f'"{game.title}" removed from wishlist.')
         return JsonResponse({"status": "removed"})
     else:
         Wishlist.objects.create(player=request.user, game=game)
-        messages.success(request, f'"{game.title}" added to wishlist.')
         return JsonResponse({"status": "added"})
 
 
@@ -205,15 +202,11 @@ def api_purchase_game(request, game_id):
     game = get_object_or_404(Game, id=game_id)
 
     if Purchase.objects.filter(player=request.user, game=game).exists():
-        messages.error(request, "Game already purchased.")
         return JsonResponse({"status": "error"}, status=400)
 
     Purchase.objects.create(player=request.user, game=game)
     Wishlist.objects.filter(player=request.user, game=game).delete()
 
-    messages.success(
-        request, f'Thank you! You have successfully purchased "{game.title}".'
-    )
     return JsonResponse({"status": "success"})
 
 
@@ -223,7 +216,6 @@ def api_submit_review(request, game_id):
     game = get_object_or_404(Game, id=game_id)
 
     if not Purchase.objects.filter(player=request.user, game=game).exists():
-        messages.error(request, "You must own the game to review it.")
         return JsonResponse({"status": "error"}, status=403)
 
     try:
@@ -234,14 +226,12 @@ def api_submit_review(request, game_id):
         return JsonResponse({"status": "error"}, status=400)
 
     if not (1 <= rating <= 5):
-        messages.error(request, "Rating must be between 1 and 5.")
         return JsonResponse({"status": "error"}, status=400)
 
     review, created = Review.objects.update_or_create(
         player=request.user, game=game, defaults={"rating": rating, "comment": comment}
     )
 
-    messages.success(request, "Review submitted successfully!")
     return JsonResponse(
         {
             "status": "success",
@@ -266,14 +256,11 @@ def api_toggle_follow(request, developer_id):
     user_profile = request.user.profile
 
     if developer_profile == user_profile:
-        messages.error(request, "You cannot follow yourself.")
         return JsonResponse({"status": "error"}, status=400)
 
     if user_profile.following.filter(id=developer_profile.id).exists():
         user_profile.following.remove(developer_profile)
-        messages.success(request, f"You unfollowed {developer_user.username}.")
         return JsonResponse({"status": "unfollowed"})
     else:
         user_profile.following.add(developer_profile)
-        messages.success(request, f"You are now following {developer_user.username}!")
         return JsonResponse({"status": "followed"})
