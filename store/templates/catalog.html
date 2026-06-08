@@ -1,8 +1,12 @@
 {% extends 'base.html' %}
+{% load static %}
 {% block title %}Store{% endblock %}
 {% block content %}
     <div class="catalog-subnav">
         <form method="GET" action="{% url 'catalog' %}" class="subnav-search-form">
+            <img src="{% static 'img/search.svg' %}"
+                 class="search-icon"
+                 alt="Search Icon">
             <input type="text"
                    name="search"
                    placeholder="Search games..."

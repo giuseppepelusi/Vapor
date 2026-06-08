@@ -58,6 +58,7 @@
 
 html {
 	scroll-behavior: smooth;
+	overscroll-behavior: none;
 }
 
 body {
@@ -289,10 +290,17 @@ nav > div:last-child span {
 
 .subnav-search-form input,
 .subnav-search-form select {
+	font-family: "../fonts/Roboto", sans-serif;
+	font-weight: 400;
 	padding: 10px 16px;
 	font-size: 1rem;
 	height: 44px;
 	border-radius: var(--radius-md);
+}
+
+.subnav-search-form input::placeholder {
+	font-family: "../fonts/Roboto", sans-serif;
+	font-weight: 400;
 }
 
 .subnav-search-form input {
@@ -302,6 +310,15 @@ nav > div:last-child span {
 .subnav-search-form select {
 	min-width: 160px;
 	width: auto;
+}
+
+.subnav-search-form .search-icon {
+	position: relative;
+	left: 8px;
+	width: 18px;
+	height: 18px;
+	pointer-events: none;
+	filter: brightness(0) invert(1);
 }
 
 section,
