@@ -1,22 +1,3 @@
-function showNotification(message, type = "success") {
-	let container = document.querySelector(".messages-container");
-	if (!container) {
-		container = document.createElement("div");
-		container.className = "messages-container";
-		document.querySelector("main")?.prepend(container);
-	}
-
-	const notice = document.createElement("p");
-	notice.style.padding = "1rem";
-	notice.style.border = "1px solid";
-	notice.style.backgroundColor = type === "success" ? "#d4edda" : "#f8d7da";
-	notice.style.color = type === "success" ? "#155724" : "#721c24";
-	notice.textContent = message;
-
-	container.appendChild(notice);
-	setTimeout(() => notice.remove(), 4000);
-}
-
 function getCSRFToken() {
 	const cookies = document.cookie.split(";");
 	for (let cookie of cookies) {
