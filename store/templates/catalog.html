@@ -1,51 +1,47 @@
 {% extends 'base.html' %}
 {% block title %}Store{% endblock %}
 {% block content %}
-    <section>
-        <header>
-            <h1>Game Store</h1>
-            <form method="GET">
-                <input type="text"
-                       name="search"
-                       placeholder="Search games..."
-                       value="{{ search_query }}">
-                <select name="genre">
-                    <option value="">All Genres</option>
-                    {% for genre in genres %}
-                        <option value="{{ genre.id }}"
-                                {% if genre.id|stringformat:"s" == selected_genre %}selected{% endif %}>{{ genre.name }}</option>
-                    {% endfor %}
-                </select>
-                <button type="submit">Filter</button>
-            </form>
-        </header>
-        {% if games %}
+    <header>
+        <h1>Game Store</h1>
+        <form method="GET">
+            <input type="text"
+                   name="search"
+                   placeholder="Search games..."
+                   value="{{ search_query }}">
+            <select name="genre">
+                <option value="">All Genres</option>
+                {% for genre in genres %}
+                    <option value="{{ genre.id }}"
+                            {% if genre.id|stringformat:"s" == selected_genre %}selected{% endif %}>{{ genre.name }}</option>
+                {% endfor %}
+            </select>
+            <button type="submit">Filter</button>
+        </form>
+    </header>
+    {% if games %}
+        <ul class="game-list">
             {% for game in games %}
-                <article>
+                <li>
                     {% if game.cover_image %}
                         <img src="{{ game.cover_image.url }}" alt="{{ game.title }}">
                     {% else %}
                         <p>No Image Available</p>
                     {% endif %}
-                    <h3>
-                        <a href="{% url 'game_detail' game.id %}">{{ game.title }}</a>
-                    </h3>
-                    <p>${{ game.price }}</p>
-                    <p>
+                    <h3><a href="{% url 'game_detail' game.id %}">{{ game.title }}</a></h3>
+                    <p class="price">${{ game.price }}</p>
+                    <p class="genres">
                         {% for genre in game.genres.all %}
                             <span>{{ genre.name }}</span>
                         {% endfor %}
                     </p>
                     <footer>
                         <small>by {{ game.developer.username }}</small>
-                        <br>
-                        <br>
-                        <a href="{% url 'game_detail' game.id %}" role="button">View</a>
+                        <a href="{% url 'game_detail' game.id %}">View</a>
                     </footer>
-                </article>
+                </li>
             {% endfor %}
-        {% else %}
-            <p>No games found. Try adjusting your filters.</p>
-        {% endif %}
-    </section>
+        </ul>
+    {% else %}
+        <p>No games found. Try adjusting your filters.</p>
+    {% endif %}
 {% endblock %}

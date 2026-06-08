@@ -4,7 +4,7 @@
     <section>
         <h1>My Games</h1>
         <div>
-            <a href="{% url 'add_game' %}" role="button">+ Add New Game</a>
+            <a href="{% url 'add_game' %}" class="button">+ Add New Game</a>
         </div>
         {% if games %}
             <table>
@@ -30,18 +30,13 @@
                             </td>
                             <td>{{ game.created_at|date:"M d, Y" }}</td>
                             <td>{{ game.sales.count }}</td>
-                            <td>
-                                <a href="{% url 'game_detail' game.id %}" role="button">View</a>
-                            </td>
+                            <td><a href="{% url 'game_detail' game.id %}">View</a></td>
                         </tr>
                     {% endfor %}
                 </tbody>
             </table>
         {% else %}
-            <p>
-                You haven't published any games yet.
-                <a href="{% url 'add_game' %}">Create your first game</a>
-            </p>
+            <p>You haven't published any games yet. <a href="{% url 'add_game' %}">Create your first game</a></p>
         {% endif %}
     </section>
 {% endblock %}

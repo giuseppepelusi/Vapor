@@ -1,32 +1,33 @@
 {% extends 'base.html' %}
 {% block title %}Library{% endblock %}
 {% block content %}
-    <section>
+    <header>
         <h1>My Library</h1>
-        {% if games %}
+    </header>
+    {% if games %}
+        <ul class="game-list">
             {% for game in games %}
-                <article>
+                <li>
                     {% if game.cover_image %}
-                        <img src="{{ game.cover_image.url }}" alt="{{ game.title }}" />
+                        <img src="{{ game.cover_image.url }}" alt="{{ game.title }}">
                     {% else %}
                         <p>No Image Available</p>
                     {% endif %}
                     <h3><a href="{% url 'game_detail' game.id %}">{{ game.title }}</a></h3>
-                    <p>${{ game.price }}</p>
-                    <p>
+                    <p class="price">${{ game.price }}</p>
+                    <p class="genres">
                         {% for genre in game.genres.all %}
                             <span>{{ genre.name }}</span>
                         {% endfor %}
                     </p>
-                    <p>by {{ game.developer.username }}</p>
-                    <a href="{% url 'game_detail' game.id %}" role="button">View</a>
-                </article>
+                    <footer>
+                        <small>by {{ game.developer.username }}</small>
+                        <a href="{% url 'game_detail' game.id %}">View</a>
+                    </footer>
+                </li>
             {% endfor %}
-        {% else %}
-            <p>
-                You haven't purchased any games yet.
-                <a href="{% url 'catalog' %}">Browse the store</a>
-            </p>
-        {% endif %}
-    </section>
+        </ul>
+    {% else %}
+        <p>You haven't purchased any games yet. <a href="{% url 'catalog' %}">Browse the store</a></p>
+    {% endif %}
 {% endblock %}

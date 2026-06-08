@@ -2,28 +2,36 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Vapor |
             {% block title %}{% endblock %}
         </title>
-        <link rel="icon" href="{% static 'img/logo.svg' %}" type="image/svg+xml" />
-        <link rel="stylesheet" href="{% static 'css/style.css' %}" />
+        <link rel="icon" href="{% static 'img/logo.svg' %}" type="image/svg+xml">
+        <link rel="stylesheet" href="{% static 'css/style.css' %}">
         {% block extra_css %}{% endblock %}
     </head>
     <body>
         <nav>
-            <div class="navbar-brand">
+            <div>
                 <a href="{% url 'catalog' %}">Vapor</a>
             </div>
-            <div class="navbar-links">
-                <a href="{% url 'catalog' %}">Store</a>
+            <div>
+                <a href="{% url 'catalog' %}"
+                   {% if request.resolver_match.url_name == 'catalog' %}aria-current="page"{% endif %}>Store</a>
                 {% if user.is_authenticated %}
-                    <a href="{% url 'library' %}">Library</a>
-                    <a href="{% url 'wishlist' %}">Wishlist</a>
+                    <a href="{% url 'library' %}"
+                       {% if request.resolver_match.url_name == 'library' %}aria-current="page"{% endif %}>Library</a>
+                    <a href="{% url 'wishlist' %}"
+                       {% if request.resolver_match.url_name == 'wishlist' %}aria-current="page"{% endif %}>Wishlist</a>
                     {% if user.profile.is_developer %}
-                        <a href="{% url 'dashboard' %}">Dashboard</a>
+                        <a href="{% url 'dashboard' %}"
+                           {% if request.resolver_match.url_name == 'dashboard' %}aria-current="page"{% endif %}>Dashboard</a>
                     {% endif %}
+                {% endif %}
+            </div>
+            <div>
+                {% if user.is_authenticated %}
                     <span>{{ user.username }}</span>
                     <a href="{% url 'logout' %}">Logout</a>
                 {% else %}
@@ -32,9 +40,10 @@
             </div>
         </nav>
         <main>
+            <div id="global-feedback"></div>
             {% if messages %}
                 {% for message in messages %}
-                    <aside data-type="{{ message.tags }}">
+                    <aside class="message" data-type="{{ message.tags }}">
                         {{ message }}
                     </aside>
                 {% endfor %}
@@ -44,5 +53,35 @@
         </main>
         <script src="{% static 'js/api.js' %}"></script>
         {% block scripts %}{% endblock %}
+        <script>
+            (function() {
+                const djangoMessages = document.querySelectorAll('aside.message');
+                if (djangoMessages.length) {
+                    setTimeout(() => {
+                        djangoMessages.forEach(msg => msg.remove());
+                    }, 2000);
+                }
+
+                window.showNotification = function(message, type = "success") {
+                    let container = document.getElementById('global-feedback');
+                    if (!container) {
+                        container = document.createElement('div');
+                        container.id = 'global-feedback';
+                        const main = document.querySelector('main');
+                        if (main) main.prepend(container);
+                        else document.body.prepend(container);
+                    }
+                    container.innerHTML = '';
+                    const msg = document.createElement('aside');
+                    msg.className = 'message';
+                    msg.setAttribute('data-type', type);
+                    msg.textContent = message;
+                    container.appendChild(msg);
+                    setTimeout(() => {
+                        if (container.firstChild === msg) container.innerHTML = '';
+                    }, 2000);
+                };
+            })();
+        </script>
     </body>
 </html>

@@ -5,46 +5,56 @@
         <h1>Publish New Game</h1>
         <form method="POST" enctype="multipart/form-data">
             {% csrf_token %}
-            <label for="title">Game Title *</label>
-            <input type="text"
-                   id="title"
-                   name="title"
-                   required
-                   autofocus
-                   placeholder="Enter game title" />
-            <label for="description">Description *</label>
-            <textarea id="description"
-                      name="description"
-                      required
-                      rows="6"
-                      placeholder="Describe your game..."></textarea>
-            <label for="price">Price *</label>
-            <input type="number"
-                   id="price"
-                   name="price"
-                   required
-                   step="0.01"
-                   min="0"
-                   max="9999.99"
-                   placeholder="0.00" />
-            <label for="requirements">System Requirements *</label>
-            <textarea id="requirements"
-                      name="requirements"
-                      required
-                      rows="4"
-                      placeholder="e.g., OS: Windows 10, CPU: Intel i5, RAM: 8GB"></textarea>
-            <label for="cover_image">Cover Image</label>
-            <input type="file" id="cover_image" name="cover_image" accept="image/*" />
+            <div>
+                <label for="title">Game Title *</label>
+                <input type="text"
+                       id="title"
+                       name="title"
+                       required
+                       autofocus
+                       placeholder="Enter game title">
+            </div>
+            <div>
+                <label for="description">Description *</label>
+                <textarea id="description"
+                          name="description"
+                          required
+                          rows="6"
+                          placeholder="Describe your game..."></textarea>
+            </div>
+            <div>
+                <label for="price">Price *</label>
+                <input type="number"
+                       id="price"
+                       name="price"
+                       required
+                       step="0.01"
+                       min="0"
+                       max="9999.99"
+                       placeholder="0.00">
+            </div>
+            <div>
+                <label for="requirements">System Requirements *</label>
+                <textarea id="requirements"
+                          name="requirements"
+                          required
+                          rows="4"
+                          placeholder="e.g., OS: Windows 10, CPU: Intel i5, RAM: 8GB"></textarea>
+            </div>
+            <div>
+                <label for="cover_image">Cover Image</label>
+                <input type="file" id="cover_image" name="cover_image" accept="image/*">
+            </div>
             <fieldset>
                 <legend>Genres *</legend>
                 {% for genre in genres %}
                     <label>
-                        <input type="checkbox" name="genres" value="{{ genre.id }}" />
+                        <input type="checkbox" name="genres" value="{{ genre.id }}">
                         {{ genre.name }}
                     </label>
                 {% endfor %}
             </fieldset>
-            <div>
+            <div class="form-actions">
                 <button type="submit">Publish Game</button>
                 <a href="{% url 'dashboard' %}" role="button">Cancel</a>
             </div>
