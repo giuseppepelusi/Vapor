@@ -109,7 +109,7 @@ def signup_user(request):
 
 def logout_user(request):
     logout(request)
-    messages.info(request, "You have been logged out successfully.")
+    messages.success(request, "You have been logged out successfully.")
     return redirect("catalog")
 
 

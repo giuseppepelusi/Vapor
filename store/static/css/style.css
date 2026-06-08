@@ -450,7 +450,6 @@ input[type="submit"],
 	cursor: pointer;
 	font-size: 1rem;
 	text-align: center;
-	display: inline-block;
 	transition: opacity 0.2s;
 }
 
@@ -551,4 +550,43 @@ aside[data-type="danger"] {
 	ul.game-list {
 		grid-template-columns: 1fr;
 	}
+}
+
+#toast-container {
+	position: fixed;
+	top: 100px;
+	left: 20px;
+	z-index: 9999;
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+	max-width: 350px;
+	width: auto;
+	pointer-events: none;
+}
+
+#toast-container .message {
+	pointer-events: auto;
+	position: relative;
+	margin: 0;
+	padding: 6px 12px;
+	font-size: 0.95rem;
+	line-height: 1.4;
+	border-radius: 6px;
+	animation: slideInLeft 0.2s ease-out;
+}
+
+@keyframes slideInLeft {
+	from {
+		transform: translateX(-20px);
+		opacity: 0;
+	}
+	to {
+		transform: translateX(0);
+		opacity: 1;
+	}
+}
+
+main > aside.message {
+	display: none;
 }

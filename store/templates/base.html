@@ -40,7 +40,7 @@
             </div>
         </nav>
         <main>
-            <div id="global-feedback"></div>
+            <div id="toast-container"></div>
             {% if messages %}
                 {% for message in messages %}
                     <aside class="message" data-type="{{ message.tags }}">
@@ -54,31 +54,28 @@
         <script src="{% static 'js/api.js' %}"></script>
         {% block scripts %}{% endblock %}
         <script>
-            (function() {
-                const djangoMessages = document.querySelectorAll('aside.message');
-                if (djangoMessages.length) {
-                    setTimeout(() => {
-                        djangoMessages.forEach(msg => msg.remove());
-                    }, 2000);
+            (function () {
+                const container = document.getElementById('toast-container');
+                if (container) {
+                    const messages = document.querySelectorAll('main > aside.message');
+                    messages.forEach(msg => {
+                        container.appendChild(msg);
+                        setTimeout(() => {
+                            if (msg.parentNode) msg.remove();
+                        }, 2000);
+                    });
                 }
 
-                window.showNotification = function(message, type = "success") {
-                    let container = document.getElementById('global-feedback');
-                    if (!container) {
-                        container = document.createElement('div');
-                        container.id = 'global-feedback';
-                        const main = document.querySelector('main');
-                        if (main) main.prepend(container);
-                        else document.body.prepend(container);
-                    }
-                    container.innerHTML = '';
+                window.showNotification = function (message, type = "success") {
+                    const container = document.getElementById('toast-container');
+                    if (!container) return;
                     const msg = document.createElement('aside');
                     msg.className = 'message';
                     msg.setAttribute('data-type', type);
                     msg.textContent = message;
                     container.appendChild(msg);
                     setTimeout(() => {
-                        if (container.firstChild === msg) container.innerHTML = '';
+                        if (msg.parentNode) msg.remove();
                     }, 2000);
                 };
             })();
