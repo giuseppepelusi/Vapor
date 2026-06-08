@@ -10,23 +10,36 @@ function getCSRFToken() {
 }
 
 function purchaseGame(button, gameId) {
+	const actionsContainer = button.closest(".actions");
+
 	fetch(`/api/purchase/${gameId}/`, {
 		method: "POST",
 		headers: { "X-CSRFToken": getCSRFToken() },
 	})
-		.then((r) => r.json().then((data) => ({ status: r.status, body: data })))
-		.then((res) => {
-			if (res.status === 200) {
-				showNotification("Game purchased successfully!");
-				const p = document.createElement("p");
-				p.textContent = "You own this game";
-				button.parentNode.replaceChild(p, button);
-				button.parentNode.querySelector('button[onclick*="toggleWishlist"]')?.remove();
-			} else {
-				showNotification(res.body.message || "Purchase failed", "error");
+		.then((r) => {
+			if (!r.ok) {
+				return r.json().then((err) => {
+					throw new Error(err.status || "Purchase failed");
+				});
 			}
+			return r.json();
 		})
-		.catch(() => showNotification("Network error", "error"));
+		.then((data) => {
+			showNotification("Game purchased successfully!");
+
+			if (actionsContainer) {
+				actionsContainer.querySelector('button[onclick*="toggleWishlist"]')?.remove();
+				actionsContainer.querySelector('button[onclick*="purchaseGame"]')?.remove();
+			}
+
+			const p = document.createElement("p");
+			p.className = "owned-badge";
+			p.textContent = "✓ You own this game";
+			actionsContainer.prepend(p);
+		})
+		.catch((error) => {
+			showNotification(error.message || "Network error", "error");
+		});
 }
 
 function toggleWishlist(button, gameId) {
