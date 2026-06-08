@@ -1,4 +1,3 @@
-/* Color Palette */
 :root {
 	--accent-primary: #8a2be2;
 	--accent-secondary: #6c5ce7;
@@ -103,7 +102,6 @@ a:hover {
 	text-decoration: underline;
 }
 
-/* Navigation */
 nav {
 	background: linear-gradient(
 		180deg,
@@ -161,7 +159,6 @@ nav > div:last-child span {
 	color: var(--text-secondary);
 }
 
-/* Sections & Cards */
 section,
 main > header,
 .reviews-section,
@@ -174,7 +171,6 @@ main > header,
 	margin-bottom: var(--spacing-lg);
 }
 
-/* Game list (ul) */
 ul.game-list {
 	display: grid;
 	grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -249,7 +245,6 @@ ul.game-list li footer a {
 	color: white;
 }
 
-/* Game Detail */
 .game-header {
 	display: grid;
 	grid-template-columns: 1fr 1.5fr;
@@ -344,7 +339,6 @@ ul.game-list li footer a {
 	margin-bottom: var(--spacing-xl);
 }
 
-/* Reviews */
 .review-form-container {
 	margin-bottom: var(--spacing-xl);
 	padding: var(--spacing-lg);
@@ -389,7 +383,6 @@ ul.game-list li footer a {
 	font-weight: 600;
 }
 
-/* Tables */
 table {
 	width: 100%;
 	border-collapse: collapse;
@@ -417,7 +410,6 @@ tbody tr:hover {
 	background: rgba(138, 43, 226, 0.05);
 }
 
-/* Forms */
 form:not(.review-form-container form) {
 	display: flex;
 	flex-direction: column;
@@ -476,7 +468,6 @@ button[onclick*="toggleFollow"] {
 	color: var(--accent-primary);
 }
 
-/* Auth containers */
 .auth-container {
 	max-width: 400px;
 	margin: var(--spacing-xl) auto;
@@ -499,7 +490,6 @@ button[onclick*="toggleFollow"] {
 	margin-top: var(--spacing-md);
 }
 
-/* Messages */
 aside.message {
 	padding: var(--spacing-md) var(--spacing-lg);
 	border-radius: var(--radius-md);
@@ -531,7 +521,6 @@ aside[data-type="danger"] {
 	}
 }
 
-/* Responsive */
 @media (max-width: 768px) {
 	main {
 		padding: var(--spacing-md);
