@@ -4,13 +4,18 @@
 {% block content %}
     <div class="catalog-subnav">
         <form method="GET" action="{% url 'catalog' %}" class="subnav-search-form">
-            <img src="{% static 'img/search.svg' %}"
-                 class="search-icon"
-                 alt="Search Icon">
-            <input type="text"
-                   name="search"
-                   placeholder="Search games..."
-                   value="{{ search_query }}">
+            <div class="search-field-container"
+                 style="position: relative;
+                        display: flex;
+                        align-items: center">
+                <img src="{% static 'img/search.svg' %}"
+                     class="search-icon"
+                     alt="Search Icon">
+                <input type="text"
+                       name="search"
+                       placeholder="Search games..."
+                       value="{{ search_query }}">
+            </div>
             <select name="genre">
                 <option value="">All Genres</option>
                 {% for genre in genres %}
@@ -18,6 +23,16 @@
                             {% if genre.id|stringformat:"s" == selected_genre %}selected{% endif %}>{{ genre.name }}</option>
                 {% endfor %}
             </select>
+            <div class="price-slider-container">
+                <label for="price-range">Max Price: <span id="price-display">No limit</span></label>
+                <input type="range"
+                       id="price-range"
+                       name="max_price"
+                       min="0"
+                       max="60"
+                       step="10"
+                       value="{{ max_price|default:'60' }}">
+            </div>
         </form>
     </div>
     {% if games %}

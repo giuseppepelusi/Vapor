@@ -156,24 +156,41 @@ document.addEventListener("DOMContentLoaded", () => {
 
 	const searchInput = searchForm.querySelector('input[name="search"]');
 	const genreSelect = searchForm.querySelector('select[name="genre"]');
-	const gameListContainer = document.querySelector(".game-list");
-	const mainContent = document.querySelector("main");
+	const priceSlider = searchForm.querySelector('input[name="max_price"]');
+	const priceDisplay = document.getElementById("price-display");
 	let debounceTimer;
 
+	function syncPriceLabel() {
+		if (!priceSlider || !priceDisplay) return;
+		const val = parseInt(priceSlider.value, 10);
+		if (val >= 60) {
+			priceDisplay.textContent = "No limit";
+		} else if (val === 0) {
+			priceDisplay.textContent = "Free To Play";
+		} else {
+			priceDisplay.textContent = `€${val}`;
+		}
+	}
+
+	syncPriceLabel();
+
 	function fetchFilteredGames() {
-		const searchQuery = searchInput.value;
-		const selectedGenre = genreSelect.value;
+		const searchQuery = searchInput ? searchInput.value : "";
+		const selectedGenre = genreSelect ? genreSelect.value : "";
+
+		let maxPriceVal = priceSlider ? priceSlider.value : "";
+		if (parseInt(maxPriceVal, 10) >= 60) {
+			maxPriceVal = "";
+		}
 
 		const baseUrl = searchForm.getAttribute("action") || window.location.pathname;
-		const url = `${baseUrl}?search=${encodeURIComponent(searchQuery)}&genre=${encodeURIComponent(selectedGenre)}&format=json`;
+		const url = `${baseUrl}?search=${encodeURIComponent(searchQuery)}&genre=${encodeURIComponent(selectedGenre)}&max_price=${maxPriceVal}&format=json`;
 
 		fetch(url, {
 			headers: { "X-Requested-With": "XMLHttpRequest" },
 		})
 			.then((res) => {
-				if (!res.ok) {
-					throw new Error(`Server returned status ${res.status}`);
-				}
+				if (!res.ok) throw new Error("Errore durante il filtraggio dei giochi");
 				return res.json();
 			})
 			.then((data) => {
@@ -181,7 +198,6 @@ document.addEventListener("DOMContentLoaded", () => {
 			})
 			.catch((err) => {
 				console.error(err);
-				showNotification("Failed to filter games", "error");
 			});
 	}
 
@@ -196,7 +212,7 @@ document.addEventListener("DOMContentLoaded", () => {
 				emptyMsg = document.createElement("p");
 				emptyMsg.id = "no-games-msg";
 				emptyMsg.textContent = "No games found. Try adjusting your filters.";
-				searchForm.parentElement.insertAdjacentElement("afterend", emptyMsg);
+				searchForm.insertAdjacentElement("afterend", emptyMsg);
 			}
 			return;
 		}
@@ -206,7 +222,7 @@ document.addEventListener("DOMContentLoaded", () => {
 		if (!listElement) {
 			listElement = document.createElement("ul");
 			listElement.className = "game-list";
-			searchForm.parentElement.insertAdjacentElement("afterend", listElement);
+			searchForm.insertAdjacentElement("afterend", listElement);
 		} else {
 			listElement.innerHTML = "";
 		}
@@ -223,23 +239,35 @@ document.addEventListener("DOMContentLoaded", () => {
 			const genresHTML = game.genres.map((genre) => `<span>${genre}</span>`).join("");
 
 			li.innerHTML = `
-				${imgHTML}
-				<h3><a href="/game/${game.id}/">${game.title}</a></h3>
-				<p class="price">${priceHTML}</p>
-				<p class="genres">${genresHTML}</p>
-				<footer>
-					<small>by ${game.developer_username}</small>
-					<a href="/game/${game.id}/">View</a>
-				</footer>
-			`;
+                ${imgHTML}
+                <h3><a href="/game/${game.id}/">${game.title}</a></h3>
+                <p class="price">${priceHTML}</p>
+                <p class="genres">${genresHTML}</p>
+                <footer>
+                    <small>by ${game.developer_username}</small>
+                    <a href="/game/${game.id}/">View</a>
+                </footer>
+            `;
 			listElement.appendChild(li);
 		});
 	}
 
-	genreSelect.addEventListener("change", fetchFilteredGames);
+	if (genreSelect) {
+		genreSelect.addEventListener("change", fetchFilteredGames);
+	}
 
-	searchInput.addEventListener("input", () => {
-		clearTimeout(debounceTimer);
-		debounceTimer = setTimeout(fetchFilteredGames, 300);
-	});
+	if (priceSlider) {
+		priceSlider.addEventListener("input", () => {
+			syncPriceLabel();
+			clearTimeout(debounceTimer);
+			debounceTimer = setTimeout(fetchFilteredGames, 250);
+		});
+	}
+
+	if (searchInput) {
+		searchInput.addEventListener("input", () => {
+			clearTimeout(debounceTimer);
+			debounceTimer = setTimeout(fetchFilteredGames, 300);
+		});
+	}
 });

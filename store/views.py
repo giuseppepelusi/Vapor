@@ -18,11 +18,16 @@ def catalog(request):
 
     search_query = request.GET.get("search", "")
     genre_filter = request.GET.get("genre", "")
+    max_price = request.GET.get("max_price", "")
 
     if search_query:
         games = games.filter(title__icontains=search_query)
+
     if genre_filter:
         games = games.filter(genres__id=genre_filter)
+
+    if max_price and max_price.isdigit():
+        games = games.filter(price__lte=int(max_price))
 
     if (
         request.headers.get("x-requested-with") == "XMLHttpRequest"
@@ -49,6 +54,7 @@ def catalog(request):
         "genres": genres,
         "search_query": search_query,
         "selected_genre": genre_filter,
+        "max_price": max_price,
     }
     return render(request, "catalog.html", context)
 
