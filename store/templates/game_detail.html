@@ -1,6 +1,11 @@
 {% extends 'base.html' %}
+{% load static %}
 {% block title %}{{ game.title }}{% endblock %}
 {% block content %}
+    <a href="{% url 'catalog' %}" class="back-btn">
+        <img src="{% static 'img/arrow-left.svg' %}" alt="Back Icon">
+        Back to Store
+    </a>
     <div class="game-header">
         <div class="game-cover">
             {% if game.cover_image %}

@@ -687,6 +687,34 @@ ul.game-list li footer a {
 	font-weight: 600;
 }
 
+.back-btn {
+	display: inline-flex;
+	align-items: center;
+	gap: var(--spacing-xs);
+	color: var(--text-secondary);
+	font-family: "Google Sans", sans-serif;
+	font-weight: 500;
+	margin-bottom: var(--spacing-md);
+	transition: var(--transition);
+}
+
+.back-btn img {
+	width: 20px;
+	height: 20px;
+	display: block;
+	filter: brightness(0) invert(0.7);
+	transition: var(--transition);
+}
+
+.back-btn:hover {
+	color: var(--accent-primary);
+}
+
+.back-btn:hover img {
+	filter: invert(24%) sepia(91%) saturate(3078%) hue-rotate(264deg) brightness(93%) contrast(101%);
+	transform: translateX(-4px);
+}
+
 table {
 	width: 100%;
 	border-collapse: collapse;
