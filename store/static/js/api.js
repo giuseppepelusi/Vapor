@@ -36,6 +36,40 @@ function purchaseGame(button, gameId) {
 			p.className = "owned-badge";
 			p.textContent = "✓ You own this game";
 			actionsContainer.prepend(p);
+
+			if (!document.querySelector(".reviews-section")) {
+				const mainContainer = document.querySelector("main");
+				const reviewsSection = document.createElement("div");
+				reviewsSection.className = "reviews-section";
+				reviewsSection.innerHTML = `
+					<h2>Reviews</h2>
+					<div class="review-form-container">
+						<h3>Leave a Review</h3>
+						<form id="review-form" data-game-id="${gameId}">
+							<div class="form-group">
+								<label for="rating">Rating</label>
+								<select id="rating" required>
+									<option value="">Select rating...</option>
+									<option value="5">5 - Excellent</option>
+									<option value="4">4 - Good</option>
+									<option value="3">3 - Average</option>
+									<option value="2">2 - Poor</option>
+									<option value="1">1 - Terrible</option>
+								</select>
+							</div>
+							<div class="form-group">
+								<label for="comment">Comment</label>
+								<textarea id="comment" rows="5" placeholder="Share your thoughts..."></textarea>
+							</div>
+							<button type="submit">Submit Review</button>
+						</form>
+					</div>
+					<div class="reviews-list">
+						<p>No reviews yet. Be the first to review!</p>
+					</div>
+				`;
+				mainContainer.appendChild(reviewsSection);
+			}
 		})
 		.catch((error) => {
 			showNotification(error.message || "Network error", "error");
@@ -114,33 +148,47 @@ document.addEventListener("submit", (e) => {
 				showNotification("Review submitted successfully!");
 
 				if (data.review) {
-					const container = document.querySelector("aside > div");
+					const container = document.querySelector(".reviews-list");
 					if (container) {
 						container.querySelector(`[data-review-id="${data.review.id}"]`)?.remove();
 						container.querySelector("p")?.remove();
 
 						const article = document.createElement("article");
+						article.className = "review-item";
 						article.setAttribute("data-review-id", data.review.id);
 						article.innerHTML = `
-							<header>
+							<div class="review-header">
 								<strong>${data.review.player_username}</strong>
-								<span>Rating: ${data.review.rating}/5</span>
-							</header>
-							<p>${data.review.comment}</p>
-							<footer>
+								<span class="review-rating">★ ${data.review.rating}/5</span>
 								<small>${data.review.created_at}</small>
-							</footer>
+							</div>
+							<p>${data.review.comment}</p>
 						`;
 						container.prepend(article);
 
-						const reviewCount = container.querySelectorAll("article").length;
-						const ratingDisplay = document.getElementById("rating-display");
-						if (ratingDisplay && reviewCount > 0) {
-							const avgRating =
-								[...container.querySelectorAll("article")].reduce((sum, r) => {
-									return sum + parseInt(r.querySelector("header span").textContent.match(/\d+/)[0]);
-								}, 0) / reviewCount;
-							ratingDisplay.textContent = `Rating: ${avgRating.toFixed(1)}/5 (${reviewCount} review${reviewCount !== 1 ? "s" : ""})`;
+						const reviewItems = container.querySelectorAll(".review-item");
+						const reviewCount = reviewItems.length;
+
+						let ratingDisplay = document.querySelector(".game-meta .rating");
+						if (!ratingDisplay) {
+							ratingDisplay = document.createElement("div");
+							ratingDisplay.className = "rating";
+							document.querySelector(".game-meta")?.appendChild(ratingDisplay);
+						}
+
+						if (reviewCount > 0) {
+							const totalRating = Array.from(reviewItems).reduce((sum, item) => {
+								const text = item.querySelector(".review-rating").textContent;
+								const score = parseInt(text.match(/\d+/)[0], 10);
+								return sum + score;
+							}, 0);
+
+							const avgRating = totalRating / reviewCount;
+
+							ratingDisplay.innerHTML = `
+								<strong>${avgRating.toFixed(1)}/5</strong>
+								<span>(${reviewCount} review${reviewCount !== 1 ? "s" : ""})</span>
+							`;
 						}
 					}
 				}

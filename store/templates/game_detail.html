@@ -99,7 +99,7 @@
             <div class="reviews-list">
                 {% if reviews %}
                     {% for review in reviews %}
-                        <article class="review-item">
+                        <article class="review-item" data-review-id="{{ review.id }}">
                             <div class="review-header">
                                 <strong>{{ review.player.username }}</strong>
                                 <span class="review-rating">★ {{ review.rating }}/5</span>
