@@ -32,7 +32,13 @@
                 </div>
             </div>
             <div class="price-section">
-                <h2 class="price">${{ game.price }}</h2>
+                <h2 class="price">
+                    {% if game.price == 0 %}
+                        Free To Play
+                    {% else %}
+                        &euro;{{ game.price }}
+                    {% endif %}
+                </h2>
             </div>
             <div class="actions">
                 {% if user.is_authenticated and user != game.developer %}

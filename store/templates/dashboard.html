@@ -22,7 +22,13 @@
                     {% for game in games %}
                         <tr>
                             <td>{{ game.title }}</td>
-                            <td>${{ game.price }}</td>
+                            <td>
+                                {% if game.price == 0 %}
+                                    Free To Play
+                                {% else %}
+                                    &euro;{{ game.price }}
+                                {% endif %}
+                            </td>
                             <td>
                                 {% for genre in game.genres.all %}
                                     <span>{{ genre.name }}</span>
