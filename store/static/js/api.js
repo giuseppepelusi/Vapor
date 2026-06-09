@@ -85,9 +85,11 @@ function toggleWishlist(button, gameId) {
 		.then((data) => {
 			if (data.status === "added") {
 				showNotification("Added to wishlist");
+				button.textContent = "Remove from Wishlist";
 				button.setAttribute("data-wishlisted", "true");
 			} else if (data.status === "removed") {
 				showNotification("Removed from wishlist");
+				button.textContent = "Add to Wishlist";
 				button.removeAttribute("data-wishlisted");
 
 				const listItem = button.closest("li");
