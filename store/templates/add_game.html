@@ -45,15 +45,17 @@
                 <label for="cover_image">Cover Image</label>
                 <input type="file" id="cover_image" name="cover_image" accept="image/*">
             </div>
-            <fieldset>
-                <legend>Genres *</legend>
-                {% for genre in genres %}
-                    <label>
-                        <input type="checkbox" name="genres" value="{{ genre.id }}">
-                        {{ genre.name }}
-                    </label>
-                {% endfor %}
-            </fieldset>
+            <div class="genres-container">
+                <span class="genres-title">Genres *</span>
+                <div class="genres-grid">
+                    {% for genre in genres %}
+                        <label class="genre-item">
+                            <input type="checkbox" name="genres" value="{{ genre.id }}">
+                            <span>{{ genre.name }}</span>
+                        </label>
+                    {% endfor %}
+                </div>
+            </div>
             <div class="form-actions">
                 <button type="submit">Publish Game</button>
                 <a href="{% url 'dashboard' %}" role="button">Cancel</a>

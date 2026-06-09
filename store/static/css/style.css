@@ -736,6 +736,71 @@ ul.game-list li footer a {
 	border-color: rgba(138, 43, 226, 0.2);
 }
 
+.genres-container {
+	display: flex;
+	flex-direction: column;
+	gap: var(--spacing-xs);
+}
+
+.genres-title {
+	font-family: "Roboto", sans-serif;
+	font-size: 1rem;
+	font-weight: 400;
+	color: var(--text-primary);
+}
+
+.genres-grid {
+	display: grid;
+	grid-template-columns: repeat(3, 1fr);
+	gap: var(--spacing-sm);
+
+	border: 1px solid var(--border-color);
+	border-radius: var(--radius-md);
+	padding: var(--spacing-md);
+	background: var(--bg-dark);
+}
+
+.genre-item {
+	display: flex;
+	align-items: center;
+	gap: var(--spacing-xs);
+	padding: var(--spacing-xs) var(--spacing-sm);
+	background: rgba(30, 30, 36, 0.6);
+	border: 1px solid var(--border-color);
+	border-radius: var(--radius-sm);
+	cursor: pointer;
+	transition: var(--transition);
+}
+
+.genre-item:hover {
+	border-color: var(--accent-secondary);
+	background: rgba(108, 92, 231, 0.05);
+}
+
+.genre-item input[type="checkbox"] {
+	width: auto;
+	margin: 0;
+	cursor: pointer;
+}
+
+.genre-item span {
+	font-family: "Roboto", sans-serif;
+	font-size: 0.95rem;
+	color: var(--text-secondary);
+}
+
+@media (max-width: 768px) {
+	.genres-grid {
+		grid-template-columns: repeat(2, 1fr);
+	}
+}
+
+@media (max-width: 480px) {
+	.genres-grid {
+		grid-template-columns: 1fr;
+	}
+}
+
 table {
 	width: 100%;
 	border-collapse: collapse;
@@ -820,7 +885,6 @@ button[onclick*="toggleFollow"] {
 	color: var(--accent-primary);
 }
 
-/* Scoped container for the wishlist title and heart icon */
 .game-title-container {
 	display: flex;
 	justify-content: space-between;
@@ -829,14 +893,12 @@ button[onclick*="toggleFollow"] {
 	gap: var(--spacing-sm);
 }
 
-/* Strips padding ONLY inside the wishlist title container so it doesn't affect other pages */
 .game-title-container h3 {
 	padding: 0 !important;
 	margin: 0;
 	font-size: 1.3rem;
 }
 
-/* Minimalist heart button configuration */
 button.wishlist-heart-btn {
 	background: transparent !important;
 	border: none !important;
@@ -858,7 +920,6 @@ button.wishlist-heart-btn {
 	filter: invert(24%) sepia(91%) saturate(3078%) hue-rotate(264deg) brightness(93%) contrast(101%);
 }
 
-/* Dynamic visibility toggles */
 button.wishlist-heart-btn .icon-solid {
 	display: none;
 }
