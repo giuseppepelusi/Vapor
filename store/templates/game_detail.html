@@ -125,6 +125,47 @@
             </div>
         </div>
     {% endif %}
+    {% if suggested_games %}
+        <div class="suggested-games-section"
+             style="margin-top: var(--spacing-xl)">
+            <h2>Suggested Games</h2>
+            <ul class="game-list">
+                {% for sug_game in suggested_games %}
+                    <li>
+                        {% if sug_game.cover_image %}
+                            <img src="{{ sug_game.cover_image.url }}" alt="{{ sug_game.title }}">
+                        {% else %}
+                            <div style="height: 250px;
+                                        display: flex;
+                                        align-items: center;
+                                        justify-content: center;
+                                        background: var(--bg-dark);
+                                        color: var(--text-muted)">No Image Available</div>
+                        {% endif %}
+                        <h3><a href="{% url 'game_detail' sug_game.id %}">{{ sug_game.title }}</a></h3>
+                        <p class="price">
+                            {% if sug_game.price == 0 %}
+                                Free To Play
+                            {% else %}
+                                &euro;{{ sug_game.price }}
+                            {% endif %}
+                        </p>
+                        <div class="genres" style="padding: 0 var(--spacing-md);">
+                            {% for genre in sug_game.genres.all %}
+                                <span class="genre-tag"
+                                      style="font-size: 0.8rem;
+                                             padding: var(--spacing-xs) var(--spacing-sm)">{{ genre.name }}</span>
+                            {% endfor %}
+                        </div>
+                        <footer>
+                            <small>by {{ sug_game.developer.username }}</small>
+                            <a href="{% url 'game_detail' sug_game.id %}">View</a>
+                        </footer>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+    {% endif %}
     {% if user.is_authenticated %}
         <input type="hidden" id="csrf-token" value="{{ csrf_token }}">
     {% endif %}

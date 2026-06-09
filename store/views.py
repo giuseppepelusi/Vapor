@@ -4,7 +4,7 @@ from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
-from django.db.models import Avg
+from django.db.models import Avg, Count
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.http import require_POST
@@ -89,6 +89,16 @@ def game_detail(request, game_id):
     if average_rating:
         average_rating = round(average_rating, 1)
 
+    game_genre_ids = game.genres.values_list("id", flat=True)
+
+    suggested_games = (
+        Game.objects.filter(genres__id__in=game_genre_ids)
+        .exclude(id=game.id)
+        .annotate(shared_genres_count=Count("genres"))
+        .order_by("-shared_genres_count", "-created_at")
+        .distinct()[:4]
+    )
+
     is_purchased = False
     is_wishlisted = False
     is_following = False
@@ -106,6 +116,7 @@ def game_detail(request, game_id):
         "game": game,
         "reviews": reviews,
         "average_rating": average_rating,
+        "suggested_games": suggested_games,
         "is_purchased": is_purchased,
         "is_wishlisted": is_wishlisted,
         "is_following": is_following,
