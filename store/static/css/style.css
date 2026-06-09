@@ -524,8 +524,15 @@ ul.game-list li footer {
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
-	flex-wrap: wrap;
-	gap: var(--spacing-sm);
+	gap: var(--spacing-xs);
+}
+
+ul.game-list li footer small {
+	margin-bottom: 0;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	max-width: calc(100% - 80px);
 }
 
 ul.game-list li footer a {
