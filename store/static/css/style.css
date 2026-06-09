@@ -204,10 +204,10 @@ nav a[aria-current="page"] {
 nav > div:first-child a {
 	font-size: 1.75rem;
 	font-weight: 700;
-	background: linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-secondary) 100%);
-	-webkit-background-clip: text;
-	background-clip: text;
-	color: transparent;
+	background: none;
+	-webkit-background-clip: initial;
+	background-clip: initial;
+	color: var(--accent-primary);
 }
 
 nav > div:nth-child(2) {
@@ -228,7 +228,6 @@ nav > div:last-child span {
 	color: var(--text-secondary);
 }
 
-/* Nav Buttons */
 .nav-login-btn,
 .nav-logout-btn {
 	display: inline-flex;
@@ -379,7 +378,6 @@ nav > div:last-child span {
 	padding-left: 44px !important;
 }
 
-/* Price Slider Controls */
 .price-slider-container {
 	display: flex !important;
 	flex-direction: row !important;
@@ -429,7 +427,6 @@ nav > div:last-child span {
 	box-shadow: none !important;
 }
 
-/* Slider Tracks */
 .price-slider-container input[type="range"]::-webkit-slider-runnable-track {
 	width: 100%;
 	height: 4px;
@@ -444,7 +441,6 @@ nav > div:last-child span {
 	border-radius: var(--radius-sm);
 }
 
-/* Slider Thumbs */
 .price-slider-container input[type="range"]::-webkit-slider-thumb {
 	-webkit-appearance: none;
 	appearance: none;
@@ -733,7 +729,6 @@ button.wishlist-heart-btn[data-wishlisted="true"] .icon-outline {
 	display: none !important;
 }
 
-/* Followed Developers */
 .followed-devs-section {
 	background: linear-gradient(135deg, rgba(138, 43, 226, 0.1) 0%, rgba(30, 30, 36, 0.6) 100%);
 	border: 1px solid rgba(138, 43, 226, 0.3);
@@ -917,12 +912,11 @@ textarea:focus {
 	box-shadow: 0 0 0 3px rgba(138, 43, 226, 0.1);
 }
 
-/* Buttons System */
 button,
 input[type="submit"],
 .button,
 [role="button"] {
-	background: linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-secondary) 100%);
+	background: var(--accent-primary);
 	color: white;
 	border: none;
 	padding: var(--spacing-sm) var(--spacing-lg);
@@ -948,7 +942,6 @@ button[onclick*="toggleFollow"] {
 	color: var(--accent-primary);
 }
 
-/* Auth Cards */
 .auth-container {
 	max-width: 400px;
 	margin: var(--spacing-xl) auto;
