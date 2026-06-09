@@ -715,6 +715,27 @@ ul.game-list li footer a {
 	transform: translateX(-4px);
 }
 
+.followed-devs-section {
+	background: linear-gradient(135deg, rgba(138, 43, 226, 0.1) 0%, rgba(30, 30, 36, 0.6) 100%);
+	border: 1px solid rgba(138, 43, 226, 0.3);
+	border-radius: var(--radius-lg);
+	padding: var(--spacing-lg);
+	margin-bottom: var(--spacing-xl);
+}
+
+.followed-devs-section h2 {
+	font-size: 1.75rem;
+	margin-bottom: var(--spacing-md);
+	background: linear-gradient(135deg, var(--text-primary) 0%, var(--accent-secondary) 100%);
+	-webkit-background-clip: text;
+	background-clip: text;
+	color: transparent;
+}
+
+.followed-list li {
+	border-color: rgba(138, 43, 226, 0.2);
+}
+
 table {
 	width: 100%;
 	border-collapse: collapse;

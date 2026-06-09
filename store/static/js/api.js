@@ -243,62 +243,75 @@ document.addEventListener("DOMContentLoaded", () => {
 				return res.json();
 			})
 			.then((data) => {
-				updateGameCatalogUI(data.games);
+				updateGameCatalogUI(data.games, data.followed_games);
 			})
 			.catch((err) => {
 				console.error(err);
 			});
 	}
 
-	function updateGameCatalogUI(games) {
-		let listElement = document.querySelector(".game-list");
+	function updateGameCatalogUI(games, followedGames) {
+		const mainList = document.getElementById("main-game-list");
+		const followedList = document.getElementById("followed-game-list");
+		const followedContainer = document.getElementById("followed-devs-container");
 
+		// Helper function to build string nodes for list items
+		function generateGameHTML(game) {
+			const imgHTML = game.cover_image_url
+				? `<img src="${game.cover_image_url}" alt="${game.title}">`
+				: `<p>No Image Available</p>`;
+			const priceHTML = game.price === 0 ? "Free To Play" : `&euro;${game.price.toFixed(2)}`;
+			const genresHTML = game.genres.map((genre) => `<span>${genre}</span>`).join("");
+
+			return `
+					${imgHTML}
+					<h3><a href="/game/${game.id}/">${game.title}</a></h3>
+					<p class="price">${priceHTML}</p>
+					<p class="genres">${genresHTML}</p>
+					<footer>
+						<small>by ${game.developer_username}</small>
+						<a href="/game/${game.id}/">View</a>
+					</footer>
+				`;
+		}
+
+		// 1. Update Followed Games section
+		if (followedContainer && followedList) {
+			if (!followedGames || followedGames.length === 0) {
+				followedContainer.style.display = "none";
+			} else {
+				followedContainer.style.display = "block";
+				followedList.innerHTML = "";
+				followedGames.forEach((game) => {
+					const li = document.createElement("li");
+					li.innerHTML = generateGameHTML(game);
+					followedList.appendChild(li);
+				});
+			}
+		}
+
+		// 2. Update All Games section
+		let emptyMsg = document.getElementById("no-games-msg");
 		if (games.length === 0) {
-			if (listElement) listElement.remove();
-
-			let emptyMsg = document.getElementById("no-games-msg");
+			if (mainList) mainList.style.display = "none";
 			if (!emptyMsg) {
 				emptyMsg = document.createElement("p");
 				emptyMsg.id = "no-games-msg";
 				emptyMsg.textContent = "No games found. Try adjusting your filters.";
 				searchForm.insertAdjacentElement("afterend", emptyMsg);
 			}
-			return;
-		}
-
-		document.getElementById("no-games-msg")?.remove();
-
-		if (!listElement) {
-			listElement = document.createElement("ul");
-			listElement.className = "game-list";
-			searchForm.insertAdjacentElement("afterend", listElement);
 		} else {
-			listElement.innerHTML = "";
+			if (emptyMsg) emptyMsg.remove();
+			if (mainList) {
+				mainList.style.display = "grid";
+				mainList.innerHTML = "";
+				games.forEach((game) => {
+					const li = document.createElement("li");
+					li.innerHTML = generateGameHTML(game);
+					mainList.appendChild(li);
+				});
+			}
 		}
-
-		games.forEach((game) => {
-			const li = document.createElement("li");
-
-			const imgHTML = game.cover_image_url
-				? `<img src="${game.cover_image_url}" alt="${game.title}">`
-				: `<p>No Image Available</p>`;
-
-			const priceHTML = game.price === 0 ? "Free To Play" : `&euro;${game.price.toFixed(2)}`;
-
-			const genresHTML = game.genres.map((genre) => `<span>${genre}</span>`).join("");
-
-			li.innerHTML = `
-                ${imgHTML}
-                <h3><a href="/game/${game.id}/">${game.title}</a></h3>
-                <p class="price">${priceHTML}</p>
-                <p class="genres">${genresHTML}</p>
-                <footer>
-                    <small>by ${game.developer_username}</small>
-                    <a href="/game/${game.id}/">View</a>
-                </footer>
-            `;
-			listElement.appendChild(li);
-		});
 	}
 
 	if (genreSelect) {

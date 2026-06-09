@@ -29,13 +29,25 @@ def catalog(request):
     if max_price and max_price.isdigit():
         games = games.filter(price__lte=int(max_price))
 
+    followed_games = Game.objects.none()
+    if request.user.is_authenticated:
+        try:
+            user_profile = request.user.profile
+            followed_developers = user_profile.following.all()
+            if followed_developers.exists():
+                followed_games = games.filter(
+                    developer__profile__in=followed_developers
+                ).distinct()
+        except AttributeError:
+            pass
+
     if (
         request.headers.get("x-requested-with") == "XMLHttpRequest"
         or request.GET.get("format") == "json"
     ):
-        games_list = []
-        for game in games:
-            games_list.append(
+
+        def serialize_games(games_queryset):
+            return [
                 {
                     "id": game.id,
                     "title": game.title,
@@ -44,14 +56,24 @@ def catalog(request):
                     if game.cover_image
                     else None,
                     "developer_username": game.developer.username,
-                    "genres": [genre.name for genre in game.genres.all()],
+                    "genres": [g.name for g in game.genres.all()],
                 }
-            )
-        return JsonResponse({"games": games_list})
+                for game in games_queryset
+            ]
+
+        return JsonResponse(
+            {
+                "games": serialize_games(games),
+                "followed_games": serialize_games(followed_games)
+                if request.user.is_authenticated
+                else [],
+            }
+        )
 
     context = {
         "games": games,
         "genres": genres,
+        "followed_games": followed_games if followed_games.exists() else None,
         "search_query": search_query,
         "selected_genre": genre_filter,
         "max_price": max_price,

@@ -35,8 +35,42 @@
             </div>
         </form>
     </div>
+    {% if followed_games %}
+        <div class="followed-devs-section" id="followed-devs-container">
+            <h2>From Developers You Follow</h2>
+            <ul class="game-list followed-list" id="followed-game-list">
+                {% for game in followed_games %}
+                    <li>
+                        {% if game.cover_image %}
+                            <img src="{{ game.cover_image.url }}" alt="{{ game.title }}">
+                        {% else %}
+                            <p>No Image Available</p>
+                        {% endif %}
+                        <h3><a href="{% url 'game_detail' game.id %}">{{ game.title }}</a></h3>
+                        <p class="price">
+                            {% if game.price == 0 %}
+                                Free To Play
+                            {% else %}
+                                &euro;{{ game.price }}
+                            {% endif %}
+                        </p>
+                        <p class="genres">
+                            {% for genre in game.genres.all %}
+                                <span>{{ genre.name }}</span>
+                            {% endfor %}
+                        </p>
+                        <footer>
+                            <small>by {{ game.developer.username }}</small>
+                            <a href="{% url 'game_detail' game.id %}">View</a>
+                        </footer>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+    {% endif %}
+    <h2>All Games</h2>
     {% if games %}
-        <ul class="game-list">
+        <ul class="game-list" id="main-game-list">
             {% for game in games %}
                 <li>
                     {% if game.cover_image %}
