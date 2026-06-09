@@ -437,6 +437,18 @@ nav > div:last-child span {
 	font-weight: 400;
 }
 
+.plain-header {
+	background: none !important;
+	backdrop-filter: none !important;
+	border: none !important;
+	padding: 0 !important;
+	margin-bottom: var(--spacing-md);
+}
+
+.plain-header h1 {
+	font-size: 1.75rem;
+}
+
 section,
 main > header,
 .reviews-section,
@@ -743,6 +755,59 @@ button[onclick*="toggleFollow"] {
 	background: var(--bg-slate);
 	border: 2px solid var(--accent-primary);
 	color: var(--accent-primary);
+}
+
+/* Scoped container for the wishlist title and heart icon */
+.game-title-container {
+	display: flex;
+	justify-content: space-between;
+	align-items: flex-start;
+	padding: var(--spacing-md) var(--spacing-md) 0;
+	gap: var(--spacing-sm);
+}
+
+/* Strips padding ONLY inside the wishlist title container so it doesn't affect other pages */
+.game-title-container h3 {
+	padding: 0 !important;
+	margin: 0;
+	font-size: 1.3rem;
+}
+
+/* Minimalist heart button configuration */
+button.wishlist-heart-btn {
+	background: transparent !important;
+	border: none !important;
+	padding: 0 !important;
+	margin: 0 !important;
+	width: 18px !important;
+	height: 18px !important;
+	min-width: 18px !important;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	cursor: pointer;
+}
+
+.heart-icon {
+	width: 100% !important;
+	height: 100% !important;
+	display: block;
+	filter: invert(24%) sepia(91%) saturate(3078%) hue-rotate(264deg) brightness(93%) contrast(101%);
+}
+
+/* Dynamic visibility toggles */
+button.wishlist-heart-btn .icon-solid {
+	display: none;
+}
+button.wishlist-heart-btn .icon-outline {
+	display: block;
+}
+
+button.wishlist-heart-btn[data-wishlisted="true"] .icon-solid {
+	display: block !important;
+}
+button.wishlist-heart-btn[data-wishlisted="true"] .icon-outline {
+	display: none !important;
 }
 
 .auth-container {

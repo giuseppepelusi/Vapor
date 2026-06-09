@@ -51,19 +51,18 @@ function toggleWishlist(button, gameId) {
 		.then((data) => {
 			if (data.status === "added") {
 				showNotification("Added to wishlist");
-				button.textContent = "Remove from Wishlist";
 				button.setAttribute("data-wishlisted", "true");
 			} else if (data.status === "removed") {
 				showNotification("Removed from wishlist");
-				button.textContent = "Add to Wishlist";
 				button.removeAttribute("data-wishlisted");
 
-				const article = button.closest("article");
-				if (article) {
-					article.remove();
-					const section = document.querySelector("section");
-					if (section && !section.querySelector("article")) {
-						section.innerHTML = "<h1>My Wishlist</h1><p>Your wishlist is empty.</p>";
+				const listItem = button.closest("li");
+				if (listItem) {
+					listItem.remove();
+					const list = document.querySelector(".game-list");
+					if (list && !list.querySelector("li")) {
+						list.outerHTML =
+							'<p>Your wishlist is empty. <a href="/catalog/">Browse the store</a></p>';
 					}
 				}
 			}

@@ -1,7 +1,8 @@
 {% extends 'base.html' %}
+{% load static %}
 {% block title %}Wishlist{% endblock %}
 {% block content %}
-    <header>
+    <header class="plain-header">
         <h1>My Wishlist</h1>
     </header>
     {% if games %}
@@ -13,21 +14,35 @@
                     {% else %}
                         <p>No Image Available</p>
                     {% endif %}
-                    <h3><a href="{% url 'game_detail' game.id %}">{{ game.title }}</a></h3>
-                    <p class="price">${{ game.price }}</p>
-                    <p class="genres">
-                        {% for genre in game.genres.all %}
-                            <span>{{ genre.name }}</span>
-                        {% endfor %}
-                    </p>
-                    <footer>
-                        <small>by {{ game.developer.username }}</small>
-                        <button type="button" onclick="toggleWishlist(this, {{ game.id }})">Remove from Wishlist</button>
-                    </footer>
-                </li>
-            {% endfor %}
-        </ul>
-    {% else %}
-        <p>Your wishlist is empty. <a href="{% url 'catalog' %}">Browse the store</a></p>
-    {% endif %}
-{% endblock %}
+                    <div class="game-title-container">
+                        <h3><a href="{% url 'game_detail' game.id %}">{{ game.title }}</a></h3>
+                        <button type="button"
+                                class="wishlist-heart-btn"
+                                onclick="toggleWishlist(this, {{ game.id }})"
+                                aria-label="Toggle Wishlist">
+                            <img src="{% static 'img/heart-solid.svg' %}" class="heart-icon icon-outline"
+                            </button>
+                        </div>
+                        <p class="price">
+                            {% if game.price == 0 %}
+                                Free To Play
+                            {% else %}
+                                &euro;{{ game.price }}
+                            {% endif %}
+                        </p>
+                        <p class="genres">
+                            {% for genre in game.genres.all %}
+                                <span>{{ genre.name }}</span>
+                            {% endfor %}
+                        </p>
+                        <footer>
+                            <small>by {{ game.developer.username }}</small>
+                            <a href="{% url 'game_detail' game.id %}">View</a>
+                        </footer>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>Your wishlist is empty. <a href="{% url 'catalog' %}">Browse the store</a></p>
+        {% endif %}
+    {% endblock %}

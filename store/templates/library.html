@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% block title %}Library{% endblock %}
 {% block content %}
-    <header>
+    <header class="plain-header">
         <h1>My Library</h1>
     </header>
     {% if games %}
@@ -14,7 +14,6 @@
                         <p>No Image Available</p>
                     {% endif %}
                     <h3><a href="{% url 'game_detail' game.id %}">{{ game.title }}</a></h3>
-                    <p class="price">${{ game.price }}</p>
                     <p class="genres">
                         {% for genre in game.genres.all %}
                             <span>{{ genre.name }}</span>
