@@ -1,130 +1,283 @@
-function getCSRFToken() {
-	const cookies = document.cookie.split(";");
-	for (let cookie of cookies) {
-		cookie = cookie.trim();
-		if (cookie.startsWith("csrftoken=")) {
-			return decodeURIComponent(cookie.substring(10));
+const API = {
+	getCSRFToken() {
+		const cookies = document.cookie.split(";");
+		for (let cookie of cookies) {
+			cookie = cookie.trim();
+			if (cookie.startsWith("csrftoken=")) {
+				return decodeURIComponent(cookie.substring(10));
+			}
 		}
-	}
-	return null;
-}
+		return null;
+	},
 
-function purchaseGame(button, gameId) {
-	const actionsContainer = button.closest(".actions");
+	getHeaders(extraHeaders = {}) {
+		return {
+			"X-CSRFToken": this.getCSRFToken(),
+			...extraHeaders,
+		};
+	},
 
-	fetch(`/api/purchase/${gameId}/`, {
-		method: "POST",
-		headers: { "X-CSRFToken": getCSRFToken() },
-	})
-		.then((r) => {
+	purchaseGame(gameId) {
+		return fetch(`/api/purchase/${gameId}/`, {
+			method: "POST",
+			headers: this.getHeaders(),
+		}).then((r) => {
 			if (!r.ok) {
 				return r.json().then((err) => {
 					throw new Error(err.status || "Purchase failed");
 				});
 			}
 			return r.json();
-		})
-		.then((data) => {
-			showNotification("Game purchased successfully!");
-
-			if (actionsContainer) {
-				actionsContainer.querySelector('button[onclick*="toggleWishlist"]')?.remove();
-				actionsContainer.querySelector('button[onclick*="purchaseGame"]')?.remove();
-			}
-
-			const p = document.createElement("p");
-			p.className = "owned-badge";
-			p.textContent = "✓ You own this game";
-			actionsContainer.prepend(p);
-
-			if (!document.querySelector(".reviews-section")) {
-				const mainContainer = document.querySelector("main");
-				const reviewsSection = document.createElement("div");
-				reviewsSection.className = "reviews-section";
-				reviewsSection.innerHTML = `
-					<h2>Reviews</h2>
-					<div class="review-form-container">
-						<h3>Leave a Review</h3>
-						<form id="review-form" data-game-id="${gameId}">
-							<div class="form-group">
-								<label for="rating">Rating</label>
-								<select id="rating" required>
-									<option value="">Select rating...</option>
-									<option value="5">5 - Excellent</option>
-									<option value="4">4 - Good</option>
-									<option value="3">3 - Average</option>
-									<option value="2">2 - Poor</option>
-									<option value="1">1 - Terrible</option>
-								</select>
-							</div>
-							<div class="form-group">
-								<label for="comment">Comment</label>
-								<textarea id="comment" rows="5" placeholder="Share your thoughts..."></textarea>
-							</div>
-							<button type="submit">Submit Review</button>
-						</form>
-					</div>
-					<div class="reviews-list">
-						<p>No reviews yet. Be the first to review!</p>
-					</div>
-				`;
-				mainContainer.appendChild(reviewsSection);
-			}
-		})
-		.catch((error) => {
-			showNotification(error.message || "Network error", "error");
 		});
-}
+	},
 
-function toggleWishlist(button, gameId) {
-	fetch(`/api/wishlist/${gameId}/`, {
-		method: "POST",
-		headers: { "X-CSRFToken": getCSRFToken() },
-	})
-		.then((r) => r.json())
-		.then((data) => {
-			if (data.status === "added") {
-				showNotification("Added to wishlist");
-				button.textContent = "Remove from Wishlist";
-				button.setAttribute("data-wishlisted", "true");
-			} else if (data.status === "removed") {
-				showNotification("Removed from wishlist");
-				button.textContent = "Add to Wishlist";
-				button.removeAttribute("data-wishlisted");
+	toggleWishlist(gameId) {
+		return fetch(`/api/wishlist/${gameId}/`, {
+			method: "POST",
+			headers: this.getHeaders(),
+		}).then((r) => r.json());
+	},
 
-				const listItem = button.closest("li");
-				if (listItem) {
-					listItem.remove();
-					const list = document.querySelector(".game-list");
-					if (list && !list.querySelector("li")) {
-						list.outerHTML =
-							'<p>Your wishlist is empty. <a href="/catalog/">Browse the store</a></p>';
-					}
+	toggleFollow(developerId) {
+		return fetch(`/api/follow/${developerId}/`, {
+			method: "POST",
+			headers: this.getHeaders(),
+		}).then((r) => r.json());
+	},
+
+	submitReview(gameId, rating, comment) {
+		return fetch(`/api/review/${gameId}/`, {
+			method: "POST",
+			headers: this.getHeaders({ "Content-Type": "application/json" }),
+			body: JSON.stringify({ rating, comment }),
+		}).then((r) => r.json());
+	},
+
+	fetchFilteredGames(baseUrl, search, genre, maxPrice) {
+		const url = `${baseUrl}?search=${encodeURIComponent(search)}&genre=${encodeURIComponent(genre)}&max_price=${maxPrice}&format=json`;
+		return fetch(url, {
+			headers: { "X-Requested-With": "XMLHttpRequest" },
+		}).then((res) => {
+			if (!res.ok) throw new Error("Errore durante il filtraggio dei giochi");
+			return res.json();
+		});
+	},
+};
+
+const DOMManager = {
+	updatePurchaseUI(button, gameId) {
+		const actionsContainer = button.closest(".actions");
+		showNotification("Game purchased successfully!");
+
+		if (actionsContainer) {
+			actionsContainer.querySelector('button[onclick*="toggleWishlist"]')?.remove();
+			actionsContainer.querySelector('button[onclick*="purchaseGame"]')?.remove();
+		}
+
+		const p = document.createElement("p");
+		p.className = "owned-badge";
+		p.textContent = "✓ You own this game";
+		actionsContainer?.prepend(p);
+
+		if (!document.querySelector(".reviews-section")) {
+			const mainContainer = document.querySelector("main");
+			const reviewsSection = document.createElement("div");
+			reviewsSection.className = "reviews-section";
+			reviewsSection.innerHTML = `
+				<h2>Reviews</h2>
+				<div class="review-form-container">
+					<h3>Leave a Review</h3>
+					<form id="review-form" data-game-id="${gameId}">
+						<div class="form-group">
+							<label for="rating">Rating</label>
+							<select id="rating" required>
+								<option value="">Select rating...</option>
+								<option value="5">5 - Excellent</option>
+								<option value="4">4 - Good</option>
+								<option value="3">3 - Average</option>
+								<option value="2">2 - Poor</option>
+								<option value="1">1 - Terrible</option>
+							</select>
+						</div>
+						<div class="form-group">
+							<label for="comment">Comment</label>
+							<textarea id="comment" rows="5" placeholder="Share your thoughts..."></textarea>
+						</div>
+						<button type="submit">Submit Review</button>
+					</form>
+				</div>
+				<div class="reviews-list">
+					<p>No reviews yet. Be the first to review!</p>
+				</div>
+			`;
+			mainContainer?.appendChild(reviewsSection);
+		}
+	},
+
+	updateWishlistUI(button, status) {
+		if (status === "added") {
+			showNotification("Added to wishlist");
+			button.textContent = "Remove from Wishlist";
+			button.setAttribute("data-wishlisted", "true");
+		} else if (status === "removed") {
+			showNotification("Removed from wishlist");
+			button.textContent = "Add to Wishlist";
+			button.removeAttribute("data-wishlisted");
+
+			const listItem = button.closest("li");
+			if (listItem) {
+				listItem.remove();
+				const list = document.querySelector(".game-list");
+				if (list && !list.querySelector("li")) {
+					list.outerHTML =
+						'<p>Your wishlist is empty. <a href="/catalog/">Browse the store</a></p>';
 				}
 			}
-		})
-		.catch(() => showNotification("Network error", "error"));
-}
+		}
+	},
 
-function toggleFollow(button, developerId) {
-	fetch(`/api/follow/${developerId}/`, {
-		method: "POST",
-		headers: { "X-CSRFToken": getCSRFToken() },
-	})
-		.then((r) => r.json())
-		.then((data) => {
-			if (data.status === "followed") {
-				showNotification("Following developer");
-				button.textContent = "Following";
-				button.setAttribute("data-following", "true");
-			} else if (data.status === "unfollowed") {
-				showNotification("Unfollowed developer");
-				button.textContent = "Follow Developer";
-				button.removeAttribute("data-following");
+	updateFollowUI(button, status) {
+		if (status === "followed") {
+			showNotification("Following developer");
+			button.textContent = "Following";
+			button.setAttribute("data-following", "true");
+		} else if (status === "unfollowed") {
+			showNotification("Unfollowed developer");
+			button.textContent = "Follow Developer";
+			button.removeAttribute("data-following");
+		}
+	},
+
+	insertNewReview(reviewData) {
+		const container = document.querySelector(".reviews-list");
+		if (!container) return;
+
+		container.querySelector(`[data-review-id="${reviewData.id}"]`)?.remove();
+		container.querySelector("p")?.remove();
+
+		const article = document.createElement("article");
+		article.className = "review-item";
+		article.setAttribute("data-review-id", reviewData.id);
+		article.innerHTML = `
+			<div class="review-header">
+				<strong>${reviewData.player_username}</strong>
+				<span class="review-rating">★ ${reviewData.rating}/5</span>
+				<small>${reviewData.created_at}</small>
+			</div>
+			<p>${reviewData.comment}</p>
+		`;
+		container.prepend(article);
+
+		this.updateAverageRating();
+	},
+
+	updateAverageRating() {
+		const container = document.querySelector(".reviews-list");
+		const reviewItems = container.querySelectorAll(".review-item");
+		const reviewCount = reviewItems.length;
+
+		let ratingDisplay = document.querySelector(".game-meta .rating");
+		if (!ratingDisplay) {
+			ratingDisplay = document.createElement("div");
+			ratingDisplay.className = "rating";
+			document.querySelector(".game-meta")?.appendChild(ratingDisplay);
+		}
+
+		if (reviewCount > 0) {
+			const totalRating = Array.from(reviewItems).reduce((sum, item) => {
+				const text = item.querySelector(".review-rating").textContent;
+				const score = parseInt(text.match(/\d+/)[0], 10);
+				return sum + score;
+			}, 0);
+
+			const avgRating = totalRating / reviewCount;
+
+			ratingDisplay.innerHTML = `
+				<strong>${avgRating.toFixed(1)}/5</strong>
+				<span>(${reviewCount} review${reviewCount !== 1 ? "s" : ""})</span>
+			`;
+		}
+	},
+
+	generateGameHTML(game) {
+		const imgHTML = game.cover_image_url
+			? `<img src="${game.cover_image_url}" alt="${game.title}">`
+			: `<p>No Image Available</p>`;
+		const priceHTML = game.price === 0 ? "Free To Play" : `&euro;${game.price.toFixed(2)}`;
+		const genresHTML = game.genres.map((genre) => `<span>${genre}</span>`).join("");
+
+		return `
+			${imgHTML}
+			<h3><a href="/game/${game.id}/">${game.title}</a></h3>
+			<p class="price">${priceHTML}</p>
+			<p class="genres">${genresHTML}</p>
+			<footer>
+				<small>by ${game.developer_username}</small>
+				<a href="/game/${game.id}/">View</a>
+			</footer>
+		`;
+	},
+
+	updateGameCatalogUI(games, followedGames, searchForm) {
+		const mainList = document.getElementById("main-game-list");
+		const followedList = document.getElementById("followed-game-list");
+		const followedContainer = document.getElementById("followed-devs-container");
+
+		if (followedContainer && followedList) {
+			if (!followedGames || followedGames.length === 0) {
+				followedContainer.style.display = "none";
+			} else {
+				followedContainer.style.display = "block";
+				followedList.innerHTML = "";
+				followedGames.forEach((game) => {
+					const li = document.createElement("li");
+					li.innerHTML = this.generateGameHTML(game);
+					followedList.appendChild(li);
+				});
 			}
-		})
+		}
+
+		let emptyMsg = document.getElementById("no-games-msg");
+		if (games.length === 0) {
+			if (mainList) mainList.style.display = "none";
+			if (!emptyMsg) {
+				emptyMsg = document.createElement("p");
+				emptyMsg.id = "no-games-msg";
+				emptyMsg.textContent = "No games found. Try adjusting your filters.";
+				searchForm.insertAdjacentElement("afterend", emptyMsg);
+			}
+		} else {
+			if (emptyMsg) emptyMsg.remove();
+			if (mainList) {
+				mainList.style.display = "grid";
+				mainList.innerHTML = "";
+				games.forEach((game) => {
+					const li = document.createElement("li");
+					li.innerHTML = this.generateGameHTML(game);
+					mainList.appendChild(li);
+				});
+			}
+		}
+	},
+};
+
+window.purchaseGame = function (button, gameId) {
+	API.purchaseGame(gameId)
+		.then(() => DOMManager.updatePurchaseUI(button, gameId))
+		.catch((error) => showNotification(error.message || "Network error", "error"));
+};
+
+window.toggleWishlist = function (button, gameId) {
+	API.toggleWishlist(gameId)
+		.then((data) => DOMManager.updateWishlistUI(button, data.status))
 		.catch(() => showNotification("Network error", "error"));
-}
+};
+
+window.toggleFollow = function (button, developerId) {
+	API.toggleFollow(developerId)
+		.then((data) => DOMManager.updateFollowUI(button, data.status))
+		.catch(() => showNotification("Network error", "error"));
+};
 
 document.addEventListener("submit", (e) => {
 	if (e.target?.id === "review-form") {
@@ -135,64 +288,14 @@ document.addEventListener("submit", (e) => {
 		const rating = document.getElementById("rating").value;
 		const comment = document.getElementById("comment").value;
 
-		fetch(`/api/review/${gameId}/`, {
-			method: "POST",
-			headers: {
-				"Content-Type": "application/json",
-				"X-CSRFToken": getCSRFToken(),
-			},
-			body: JSON.stringify({ rating, comment }),
-		})
-			.then((r) => r.json())
+		API.submitReview(gameId, rating, comment)
 			.then((data) => {
 				document.getElementById("rating").value = "";
 				document.getElementById("comment").value = "";
 				showNotification("Review submitted successfully!");
 
 				if (data.review) {
-					const container = document.querySelector(".reviews-list");
-					if (container) {
-						container.querySelector(`[data-review-id="${data.review.id}"]`)?.remove();
-						container.querySelector("p")?.remove();
-
-						const article = document.createElement("article");
-						article.className = "review-item";
-						article.setAttribute("data-review-id", data.review.id);
-						article.innerHTML = `
-							<div class="review-header">
-								<strong>${data.review.player_username}</strong>
-								<span class="review-rating">★ ${data.review.rating}/5</span>
-								<small>${data.review.created_at}</small>
-							</div>
-							<p>${data.review.comment}</p>
-						`;
-						container.prepend(article);
-
-						const reviewItems = container.querySelectorAll(".review-item");
-						const reviewCount = reviewItems.length;
-
-						let ratingDisplay = document.querySelector(".game-meta .rating");
-						if (!ratingDisplay) {
-							ratingDisplay = document.createElement("div");
-							ratingDisplay.className = "rating";
-							document.querySelector(".game-meta")?.appendChild(ratingDisplay);
-						}
-
-						if (reviewCount > 0) {
-							const totalRating = Array.from(reviewItems).reduce((sum, item) => {
-								const text = item.querySelector(".review-rating").textContent;
-								const score = parseInt(text.match(/\d+/)[0], 10);
-								return sum + score;
-							}, 0);
-
-							const avgRating = totalRating / reviewCount;
-
-							ratingDisplay.innerHTML = `
-								<strong>${avgRating.toFixed(1)}/5</strong>
-								<span>(${reviewCount} review${reviewCount !== 1 ? "s" : ""})</span>
-							`;
-						}
-					}
+					DOMManager.insertNewReview(data.review);
 				}
 			})
 			.catch(() => showNotification("Network error", "error"));
@@ -221,115 +324,40 @@ document.addEventListener("DOMContentLoaded", () => {
 		}
 	}
 
-	syncPriceLabel();
-
-	function fetchFilteredGames() {
+	function handleFiltering() {
 		const searchQuery = searchInput ? searchInput.value : "";
 		const selectedGenre = genreSelect ? genreSelect.value : "";
-
 		let maxPriceVal = priceSlider ? priceSlider.value : "";
-		if (parseInt(maxPriceVal, 10) >= 60) {
-			maxPriceVal = "";
-		}
+
+		if (parseInt(maxPriceVal, 10) >= 60) maxPriceVal = "";
 
 		const baseUrl = searchForm.getAttribute("action") || window.location.pathname;
-		const url = `${baseUrl}?search=${encodeURIComponent(searchQuery)}&genre=${encodeURIComponent(selectedGenre)}&max_price=${maxPriceVal}&format=json`;
 
-		fetch(url, {
-			headers: { "X-Requested-With": "XMLHttpRequest" },
-		})
-			.then((res) => {
-				if (!res.ok) throw new Error("Errore durante il filtraggio dei giochi");
-				return res.json();
-			})
+		API.fetchFilteredGames(baseUrl, searchQuery, selectedGenre, maxPriceVal)
 			.then((data) => {
-				updateGameCatalogUI(data.games, data.followed_games);
+				DOMManager.updateGameCatalogUI(data.games, data.followed_games, searchForm);
 			})
-			.catch((err) => {
-				console.error(err);
-			});
+			.catch((err) => console.error(err));
 	}
 
-	function updateGameCatalogUI(games, followedGames) {
-		const mainList = document.getElementById("main-game-list");
-		const followedList = document.getElementById("followed-game-list");
-		const followedContainer = document.getElementById("followed-devs-container");
-
-		// Helper function to build string nodes for list items
-		function generateGameHTML(game) {
-			const imgHTML = game.cover_image_url
-				? `<img src="${game.cover_image_url}" alt="${game.title}">`
-				: `<p>No Image Available</p>`;
-			const priceHTML = game.price === 0 ? "Free To Play" : `&euro;${game.price.toFixed(2)}`;
-			const genresHTML = game.genres.map((genre) => `<span>${genre}</span>`).join("");
-
-			return `
-					${imgHTML}
-					<h3><a href="/game/${game.id}/">${game.title}</a></h3>
-					<p class="price">${priceHTML}</p>
-					<p class="genres">${genresHTML}</p>
-					<footer>
-						<small>by ${game.developer_username}</small>
-						<a href="/game/${game.id}/">View</a>
-					</footer>
-				`;
-		}
-
-		// 1. Update Followed Games section
-		if (followedContainer && followedList) {
-			if (!followedGames || followedGames.length === 0) {
-				followedContainer.style.display = "none";
-			} else {
-				followedContainer.style.display = "block";
-				followedList.innerHTML = "";
-				followedGames.forEach((game) => {
-					const li = document.createElement("li");
-					li.innerHTML = generateGameHTML(game);
-					followedList.appendChild(li);
-				});
-			}
-		}
-
-		// 2. Update All Games section
-		let emptyMsg = document.getElementById("no-games-msg");
-		if (games.length === 0) {
-			if (mainList) mainList.style.display = "none";
-			if (!emptyMsg) {
-				emptyMsg = document.createElement("p");
-				emptyMsg.id = "no-games-msg";
-				emptyMsg.textContent = "No games found. Try adjusting your filters.";
-				searchForm.insertAdjacentElement("afterend", emptyMsg);
-			}
-		} else {
-			if (emptyMsg) emptyMsg.remove();
-			if (mainList) {
-				mainList.style.display = "grid";
-				mainList.innerHTML = "";
-				games.forEach((game) => {
-					const li = document.createElement("li");
-					li.innerHTML = generateGameHTML(game);
-					mainList.appendChild(li);
-				});
-			}
-		}
-	}
+	syncPriceLabel();
 
 	if (genreSelect) {
-		genreSelect.addEventListener("change", fetchFilteredGames);
+		genreSelect.addEventListener("change", handleFiltering);
 	}
 
 	if (priceSlider) {
 		priceSlider.addEventListener("input", () => {
 			syncPriceLabel();
 			clearTimeout(debounceTimer);
-			debounceTimer = setTimeout(fetchFilteredGames, 250);
+			debounceTimer = setTimeout(handleFiltering, 250);
 		});
 	}
 
 	if (searchInput) {
 		searchInput.addEventListener("input", () => {
 			clearTimeout(debounceTimer);
-			debounceTimer = setTimeout(fetchFilteredGames, 300);
+			debounceTimer = setTimeout(handleFiltering, 300);
 		});
 	}
 });
