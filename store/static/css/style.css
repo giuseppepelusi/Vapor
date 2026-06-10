@@ -176,7 +176,8 @@ a:hover {
 
 nav {
 	font-family: "Google Sans", sans-serif;
-	background: linear-gradient(180deg, var(--bg-slate) 0%, rgba(30, 30, 36, 0.9) 30%);
+	background: rgba(30, 30, 36, 0.9) 30%;
+	backdrop-filter: blur(2px);
 	padding: 0 var(--spacing-lg);
 	height: 60px;
 	display: flex;
@@ -208,6 +209,15 @@ nav > div:first-child a {
 	-webkit-background-clip: initial;
 	background-clip: initial;
 	color: var(--accent-primary);
+}
+
+nav > div:first-child a img {
+	height: 1em;
+	width: auto;
+	vertical-align: -0.1em;
+	display: inline-block;
+	margin-right: -0.32em;
+	letter-spacing: normal;
 }
 
 nav > div:nth-child(2) {
@@ -305,15 +315,12 @@ nav > div:last-child span {
 	align-items: center !important;
 	justify-content: center;
 	pointer-events: auto;
-	background: rgba(30, 30, 36, 0.9);
-	backdrop-filter: blur(10px);
-	border-left: 1px solid var(--border-color);
-	border-right: 1px solid var(--border-color);
-	border-bottom: 1px solid var(--border-color);
-	border-top: none;
+	background: rgba(30, 30, 36, 0.9) 30%;
+	backdrop-filter: blur(2px);
 	border-bottom-left-radius: var(--radius-lg);
 	border-bottom-right-radius: var(--radius-lg);
-	box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+	border: none;
+	box-shadow: none;
 	padding: 12px 32px;
 	gap: 24px;
 	width: auto;
