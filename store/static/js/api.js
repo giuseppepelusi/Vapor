@@ -129,8 +129,7 @@ const DOMManager = {
 				listItem.remove();
 				const list = document.querySelector(".game-list");
 				if (list && !list.querySelector("li")) {
-					list.outerHTML =
-						'<p>Your wishlist is empty. <a href="/catalog/">Browse the store</a></p>';
+					list.outerHTML = '<p>Your wishlist is empty. <a href="/">Browse the store</a></p>';
 				}
 			}
 		}
