@@ -27,6 +27,9 @@ dload: setup
 	rm -rf $(MEDIA)
 	if [ -d "$(SEED)/$(MEDIA)" ]; then cp -r $(SEED)/$(MEDIA) .; fi
 
+test:
+	$(PYTHON) manage.py test
+
 clean:
 	rm -rf $(VENV)
 	rm -f $(DB)
@@ -34,5 +37,5 @@ clean:
 	find . -type d -name "__pycache__" -exec rm -rf {} +
 	find . -path "./$(VENV)" -prune -o -path "*/migrations/0*.py" -exec rm -f {} +
 
-.PHONY: run setup dsave dload clean
-.SILENT: run setup dsave dload clean
+.PHONY: run setup dsave dload test clean
+.SILENT: run setup dsave dload test clean
