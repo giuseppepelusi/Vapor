@@ -554,6 +554,19 @@ ul.game-list li footer a {
 	color: white;
 }
 
+.no-results-container {
+	grid-column: 1 / -1;
+	width: 100%;
+	text-align: center;
+	padding: var(--spacing-xl) 0;
+	clear: both;
+}
+
+.no-results-container p {
+	font-size: 1.2rem;
+	color: var(--text-secondary);
+}
+
 /* ==========================================================================
    7. GAME DETAILS PAGE
    ========================================================================== */

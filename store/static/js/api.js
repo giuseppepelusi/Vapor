@@ -240,10 +240,15 @@ const DOMManager = {
 		if (games.length === 0) {
 			if (mainList) mainList.style.display = "none";
 			if (!emptyMsg) {
+				const container = document.createElement("div");
+				container.id = "no-games-msg";
+				container.className = "no-results-container";
 				emptyMsg = document.createElement("p");
-				emptyMsg.id = "no-games-msg";
 				emptyMsg.textContent = "No games found. Try adjusting your filters.";
-				searchForm.insertAdjacentElement("afterend", emptyMsg);
+				container.appendChild(emptyMsg);
+				if (mainList) {
+					mainList.insertAdjacentElement("afterend", container);
+				}
 			}
 		} else {
 			if (emptyMsg) emptyMsg.remove();

@@ -99,6 +99,8 @@
             {% endfor %}
         </ul>
     {% else %}
-        <p>No games found. Try adjusting your filters.</p>
+        <div class="no-results-container">
+            <p>No games found. Try adjusting your filters.</p>
+        </div>
     {% endif %}
 {% endblock %}
