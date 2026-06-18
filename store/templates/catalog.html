@@ -44,7 +44,9 @@
                         {% if game.cover_image %}
                             <img src="{{ game.cover_image.url }}" alt="{{ game.title }}">
                         {% else %}
-                            <p>No Image Available</p>
+                            <div class="image-placeholder">
+                                <p>No Image Available</p>
+                            </div>
                         {% endif %}
                         <h3><a href="{% url 'game_detail' game.id %}">{{ game.title }}</a></h3>
                         <p class="price">
@@ -76,7 +78,9 @@
                     {% if game.cover_image %}
                         <img src="{{ game.cover_image.url }}" alt="{{ game.title }}">
                     {% else %}
-                        <p>No Image Available</p>
+                        <div class="image-placeholder">
+                            <p>No Image Available</p>
+                        </div>
                     {% endif %}
                     <h3><a href="{% url 'game_detail' game.id %}">{{ game.title }}</a></h3>
                     <p class="price">

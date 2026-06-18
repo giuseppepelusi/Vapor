@@ -228,7 +228,7 @@ const DOMManager = {
 	generateGameHTML(game) {
 		const imgHTML = game.cover_image_url
 			? `<img src="${game.cover_image_url}" alt="${game.title}">`
-			: `<p>No Image Available</p>`;
+			: `<div class="image-placeholder"><p>No Image Available</p></div>`;
 		const priceHTML = game.price === 0 ? "Free To Play" : `&euro;${game.price.toFixed(2)}`;
 		const genresHTML = game.genres.map((genre) => `<span>${genre}</span>`).join("");
 
