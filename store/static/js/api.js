@@ -65,7 +65,7 @@ const API = {
 };
 
 const DOMManager = {
-	updatePurchaseUI(button, gameId) {
+	updatePurchaseUI(button, gameId, reviews = []) {
 		const actionsContainer = button.closest(".actions");
 		showNotification("Game purchased successfully!");
 
@@ -83,6 +83,25 @@ const DOMManager = {
 			const mainContainer = document.querySelector("main");
 			const reviewsSection = document.createElement("div");
 			reviewsSection.className = "reviews-section";
+
+			let reviewsHTML = "<p>No reviews yet. Be the first to review!</p>";
+			if (reviews.length > 0) {
+				reviewsHTML = reviews
+					.map(
+						(review) => `
+						<article class="review-item" data-review-id="${review.id}">
+							<div class="review-header">
+								<strong>${review.player_username}</strong>
+								<span class="review-rating">★ ${review.rating}/5</span>
+								<small>${review.created_at}</small>
+							</div>
+							<p>${review.comment}</p>
+						</article>
+					`,
+					)
+					.join("");
+			}
+
 			reviewsSection.innerHTML = `
 				<h2>Reviews</h2>
 				<div class="review-form-container">
@@ -107,15 +126,18 @@ const DOMManager = {
 					</form>
 				</div>
 				<div class="reviews-list">
-					<p>No reviews yet. Be the first to review!</p>
+					${reviewsHTML}
 				</div>
 			`;
+
 			const suggestedGames = document.querySelector(".suggested-games-section");
 			if (suggestedGames) {
 				mainContainer?.insertBefore(reviewsSection, suggestedGames);
 			} else {
 				mainContainer?.appendChild(reviewsSection);
 			}
+
+			this.updateAverageRating();
 		}
 	},
 
@@ -272,7 +294,7 @@ const DOMManager = {
 
 window.purchaseGame = function (button, gameId) {
 	API.purchaseGame(gameId)
-		.then(() => DOMManager.updatePurchaseUI(button, gameId))
+		.then((data) => DOMManager.updatePurchaseUI(button, gameId, data.reviews || []))
 		.catch((error) => showNotification(error.message || "Network error", "error"));
 };
 

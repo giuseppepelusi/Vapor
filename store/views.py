@@ -266,7 +266,19 @@ def api_purchase_game(request, game_id):
     Purchase.objects.create(player=request.user, game=game)
     Wishlist.objects.filter(player=request.user, game=game).delete()
 
-    return JsonResponse({"status": "success"})
+    reviews = Review.objects.filter(game=game).order_by("-created_at")
+    serialized_reviews = [
+        {
+            "id": review.id,
+            "player_username": review.player.username,
+            "rating": review.rating,
+            "comment": review.comment,
+            "created_at": review.created_at.strftime("%b %d, %Y"),
+        }
+        for review in reviews
+    ]
+
+    return JsonResponse({"status": "success", "reviews": serialized_reviews})
 
 
 @login_required
