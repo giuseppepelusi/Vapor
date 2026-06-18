@@ -1045,6 +1045,10 @@ main > aside.message {
 	animation: slideInLeft 0.2s ease-out;
 }
 
+#toast-container .message.slide-out {
+	animation: slideOutLeft 0.2s ease-in forwards;
+}
+
 /*. Animations */
 
 @keyframes slideIn {
@@ -1066,6 +1070,17 @@ main > aside.message {
 	to {
 		transform: translateX(0);
 		opacity: 1;
+	}
+}
+
+@keyframes slideOutLeft {
+	from {
+		transform: translateX(0);
+		opacity: 1;
+	}
+	to {
+		transform: translateX(-100%);
+		opacity: 0;
 	}
 }
 

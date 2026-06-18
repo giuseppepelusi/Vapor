@@ -64,12 +64,21 @@
         <script>
             (function () {
                 const container = document.getElementById('toast-container');
+
+                function removeWithAnimation(msg) {
+                    if (!msg.parentNode) return;
+                    msg.classList.add('slide-out');
+                    msg.addEventListener('animationend', () => {
+                        if (msg.parentNode) msg.remove();
+                    });
+                }
+
                 if (container) {
                     const messages = document.querySelectorAll('main > aside.message');
                     messages.forEach(msg => {
                         container.appendChild(msg);
                         setTimeout(() => {
-                            if (msg.parentNode) msg.remove();
+                            removeWithAnimation(msg);
                         }, 3000);
                     });
                 }
@@ -83,7 +92,7 @@
                     msg.textContent = message;
                     container.appendChild(msg);
                     setTimeout(() => {
-                        if (msg.parentNode) msg.remove();
+                        removeWithAnimation(msg);
                     }, 3000);
                 };
             })();
