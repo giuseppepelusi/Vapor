@@ -110,7 +110,12 @@ const DOMManager = {
 					<p>No reviews yet. Be the first to review!</p>
 				</div>
 			`;
-			mainContainer?.appendChild(reviewsSection);
+			const suggestedGames = document.querySelector(".suggested-games-section");
+			if (suggestedGames) {
+				mainContainer?.insertBefore(reviewsSection, suggestedGames);
+			} else {
+				mainContainer?.appendChild(reviewsSection);
+			}
 		}
 	},
 
