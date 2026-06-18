@@ -1,6 +1,4 @@
-/* ==========================================================================
-   1. VARIABLES & FONTS
-   ========================================================================== */
+/* Variables and fonts */
 
 @font-face {
 	font-family: "Google Sans";
@@ -54,9 +52,7 @@
 	--transition: all 0.3s ease;
 }
 
-/* ==========================================================================
-   2. BASE RESETS & LAYOUT
-   ========================================================================== */
+/* Base reset and layout */
 
 * {
 	margin: 0;
@@ -104,9 +100,7 @@ main > header,
 	margin-bottom: var(--spacing-lg);
 }
 
-/* ==========================================================================
-   3. TYPOGRAPHY
-   ========================================================================== */
+/* Typography */
 
 h1,
 h2,
@@ -170,9 +164,7 @@ a:hover {
 	font-size: 1.75rem;
 }
 
-/* ==========================================================================
-   4. NAVIGATION COMPONENTS
-   ========================================================================== */
+/* Navigation components */
 
 nav {
 	font-family: "Google Sans", sans-serif;
@@ -292,9 +284,7 @@ nav > div:last-child span {
 	color: white;
 }
 
-/* ==========================================================================
-   5. CATALOG SEARCH / SUBNAV
-   ========================================================================== */
+/* Catalog search and subnav */
 
 .catalog-subnav {
 	position: sticky;
@@ -469,9 +459,7 @@ nav > div:last-child span {
 	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
 }
 
-/* ==========================================================================
-   6. GAME LISTS & CARDS
-   ========================================================================== */
+/* Game lists and cards */
 
 ul.game-list {
 	display: grid;
@@ -585,9 +573,7 @@ ul.game-list li footer a {
 	color: var(--text-secondary);
 }
 
-/* ==========================================================================
-   7. GAME DETAILS PAGE
-   ========================================================================== */
+/* Game details page */
 
 .game-header {
 	display: flex;
@@ -788,9 +774,20 @@ button.wishlist-heart-btn[data-wishlisted="true"] .icon-outline {
 	border-color: rgba(138, 43, 226, 0.2);
 }
 
-/* ==========================================================================
-   8. GENRE FILTERS & INTERFACES
-   ========================================================================== */
+.suggested-games-section {
+	margin-top: var(--spacing-xl);
+}
+
+.suggested-games-section .genres {
+	padding: 0 var(--spacing-md);
+}
+
+.suggested-games-section .genre-tag {
+	font-size: 0.8rem;
+	padding: var(--spacing-xs) var(--spacing-sm);
+}
+
+/* Genre filters and interfaces */
 
 .genres-container {
 	display: flex;
@@ -844,9 +841,7 @@ button.wishlist-heart-btn[data-wishlisted="true"] .icon-outline {
 	color: var(--text-secondary);
 }
 
-/* ==========================================================================
-   9. REVIEWS UTILITIES
-   ========================================================================== */
+/* Reviews utilities */
 
 .review-form-container {
 	margin-bottom: var(--spacing-xl);
@@ -882,9 +877,7 @@ button.wishlist-heart-btn[data-wishlisted="true"] .icon-outline {
 	font-weight: 600;
 }
 
-/* ==========================================================================
-   10. TABLES & FORMS
-   ========================================================================== */
+/*. Tables and forms */
 
 table {
 	width: 100%;
@@ -1002,9 +995,7 @@ button[onclick*="toggleFollow"] {
 	margin-top: var(--spacing-md);
 }
 
-/* ==========================================================================
-   11. NOTIFICATIONS, TOASTS & ASIDES
-   ========================================================================== */
+/*. Notifications and toasts */
 
 aside.message {
 	padding: var(--spacing-md) var(--spacing-lg);
@@ -1054,9 +1045,7 @@ main > aside.message {
 	animation: slideInLeft 0.2s ease-out;
 }
 
-/* ==========================================================================
-   12. ANIMATIONS
-   ========================================================================== */
+/*. Animations */
 
 @keyframes slideIn {
 	from {
@@ -1080,9 +1069,7 @@ main > aside.message {
 	}
 }
 
-/* ==========================================================================
-   13. MEDIA QUERIES
-   ========================================================================== */
+/*. Media queries */
 
 @media (max-width: 768px) {
 	main {
