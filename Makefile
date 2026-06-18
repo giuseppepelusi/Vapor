@@ -16,13 +16,13 @@ setup: clean
 	$(PYTHON) manage.py migrate
 	DJANGO_SUPERUSER_PASSWORD=admin $(PYTHON) manage.py createsuperuser --noinput --username admin --email admin@email.com
 
-dsave:
+save:
 	mkdir -p $(SEED)
 	cp $(DB) $(SEED)/
 	rm -rf $(SEED)/$(MEDIA)
 	if [ -d "$(MEDIA)" ]; then cp -r $(MEDIA) $(SEED)/; fi
 
-dload: setup
+load: setup
 	cp $(SEED)/$(DB) .
 	rm -rf $(MEDIA)
 	if [ -d "$(SEED)/$(MEDIA)" ]; then cp -r $(SEED)/$(MEDIA) .; fi
@@ -37,5 +37,5 @@ clean:
 	find . -type d -name "__pycache__" -exec rm -rf {} +
 	find . -path "./$(VENV)" -prune -o -path "*/migrations/0*.py" -exec rm -f {} +
 
-.PHONY: run setup dsave dload test clean
-.SILENT: run setup dsave dload test clean
+.PHONY: run setup save load test clean
+.SILENT: run setup save load test clean

@@ -86,12 +86,12 @@ After cloning the repository you can use the provided Makefile:
 
 - **Load demo database and media:**
     ```sh
-    make dload
+    make load
     ```
 
 - **Save current database and media:**
     ```sh
-    make dsave
+    make save
     ```
 
 - **Run local server:**
