@@ -83,30 +83,32 @@
             <p>{{ game.system_requirements|linebreaksbr }}</p>
         </div>
     </div>
-    {% if user.is_authenticated and is_purchased %}
+    {% if user.is_authenticated and is_purchased or user.is_authenticated and is_developer_owner %}
         <div class="reviews-section">
             <h2>Reviews</h2>
-            <div class="review-form-container">
-                <h3>Leave a Review</h3>
-                <form id="review-form" data-game-id="{{ game.id }}">
-                    <div class="form-group">
-                        <label for="rating">Rating</label>
-                        <select id="rating" required>
-                            <option value="">Select rating...</option>
-                            <option value="5">5 - Excellent</option>
-                            <option value="4">4 - Good</option>
-                            <option value="3">3 - Average</option>
-                            <option value="2">2 - Poor</option>
-                            <option value="1">1 - Terrible</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="comment">Comment</label>
-                        <textarea id="comment" rows="5" placeholder="Share your thoughts..."></textarea>
-                    </div>
-                    <button type="submit">Submit Review</button>
-                </form>
-            </div>
+            {% if is_purchased %}
+                <div class="review-form-container">
+                    <h3>Leave a Review</h3>
+                    <form id="review-form" data-game-id="{{ game.id }}">
+                        <div class="form-group">
+                            <label for="rating">Rating</label>
+                            <select id="rating" required>
+                                <option value="">Select rating...</option>
+                                <option value="5">5 - Excellent</option>
+                                <option value="4">4 - Good</option>
+                                <option value="3">3 - Average</option>
+                                <option value="2">2 - Poor</option>
+                                <option value="1">1 - Terrible</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="comment">Comment</label>
+                            <textarea id="comment" rows="5" placeholder="Share your thoughts..."></textarea>
+                        </div>
+                        <button type="submit">Submit Review</button>
+                    </form>
+                </div>
+            {% endif %}
             <div class="reviews-list">
                 {% if reviews %}
                     {% for review in reviews %}
@@ -120,14 +122,13 @@
                         </article>
                     {% endfor %}
                 {% else %}
-                    <p>No reviews yet. Be the first to review!</p>
+                    <p>No reviews yet.</p>
                 {% endif %}
             </div>
         </div>
     {% endif %}
     {% if suggested_games %}
-        <div class="suggested-games-section"
-             style="margin-top: var(--spacing-xl)">
+        <div class="suggested-games-section" style="margin-top: var(--spacing-xl)">
             <h2>Suggested Games</h2>
             <ul class="game-list">
                 {% for sug_game in suggested_games %}

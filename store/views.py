@@ -102,15 +102,23 @@ def game_detail(request, game_id):
     is_purchased = False
     is_wishlisted = False
     is_following = False
+    is_developer_owner = False
 
     if request.user.is_authenticated:
-        is_purchased = Purchase.objects.filter(player=request.user, game=game).exists()
-        is_wishlisted = Wishlist.objects.filter(player=request.user, game=game).exists()
+        if request.user == game.developer:
+            is_developer_owner = True
+        else:
+            is_purchased = Purchase.objects.filter(
+                player=request.user, game=game
+            ).exists()
+            is_wishlisted = Wishlist.objects.filter(
+                player=request.user, game=game
+            ).exists()
 
-        developer_profile = get_object_or_404(UserProfile, user=game.developer)
-        is_following = request.user.profile.following.filter(
-            id=developer_profile.id
-        ).exists()
+            developer_profile = get_object_or_404(UserProfile, user=game.developer)
+            is_following = request.user.profile.following.filter(
+                id=developer_profile.id
+            ).exists()
 
     context = {
         "game": game,
@@ -120,6 +128,7 @@ def game_detail(request, game_id):
         "is_purchased": is_purchased,
         "is_wishlisted": is_wishlisted,
         "is_following": is_following,
+        "is_developer_owner": is_developer_owner,
     }
     return render(request, "game_detail.html", context)
 
